@@ -24,3 +24,4 @@ input[type=checkbox]{padding:0;}
 .states button{border-radius:7px;padding:4px 8px;font-size:12px;background:rgba(40,26,12,.85);}
 .states button.on{background:var(--acc);}
 @media (max-width:700px){#grid{grid-template-columns:1fr;}}
+#style{max-width:190px;}
