@@ -10,6 +10,7 @@ Na telefonie: „Dodaj do ekranu głównego” — działa offline (`sw.js`), za
 
 `postacie.html` ([online](https://dawidcrivelli.github.io/egzorcysta-vs-cholota/postacie.html)) — duże podglądy chołoty i sprzętu (siatka 2×2, przewijana), rysowane kodem gry:
 stany (idzie, gryzie, mówi, bez transparentu…, sprzęt: ikona, działa, uszkodzony, pokaz), klatki z bufora, ramka bufora, skala z gry, tło, tempo.
+Zakładka **Style**: próby innych grafik (`js/styles/<id>.js`, lista w `STYLE_FILES` w `js/postacie.js`) — pierwsze 4 postacie chołoty obok siebie, obok obecnej grafiki.
 Lokalnie (`python3 -m http.server`) strona przeładowuje się sama po zapisie pliku. Ustawienia też z adresu: `postacie.html?tab=def&frames=1&box=1&q=pila`.
 
 ## Uruchomienie

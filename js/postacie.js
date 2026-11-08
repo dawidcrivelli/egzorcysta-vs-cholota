@@ -12,7 +12,7 @@ const TABS=[['en','Chołota'],['def','Sprzęt'],['style','Style']];
 /* Próby stylów: każdy plik js/styles/<id>.js dopisuje się do STYLES i rysuje te postacie */
 const STYLE_ENEMIES=['trup','sasiad','urzednik','komunista'];
 const STYLE_FILES=['szkic','chibi','pixel','wycinanka','plakat','cien','glina','kreska'];
-const STYLE_STATES={idzie:{walk:true},gryzie:{eat:true},stoi:{},mówi:{walk:true,talk:true}};
+const STYLE_STATES={idzie:{walk:true},gryzie:{eat:true},stoi:{},mówi:{walk:true,talk:true},'bez transparentu':{walk:true,shield:0}};
 window.STYLES=[{id:'gra',name:'Obecna grafika',desc:'Tak jak teraz w grze, do porównania.',draw:(k,x,y,h,st)=>drawEnemyRaw(k,x,y,h,st)}];
 const UI=Object.assign({tab:'en',speed:1,bg:'trawa',box:false,frames:false,gameScale:false,q:'',st:{},big:null},JSON.parse(localStorage.getItem(STORE)||'{}'));
 // ustawienia z adresu, np. postacie.html?tab=def&frames=1&box=1&q=pila&state=gryzie&speed=0&t=1.3
