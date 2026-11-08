@@ -1,6 +1,6 @@
 /* Pixel art sprzętu, część 2: kombajn, relikwia, kabel, sklep mięsny, gnojówka, aparatura, flaszka, pług, łopata, Ursus.
    Siatka: 36 pikseli = pole (2 jednostki gry na piksel), ziemia w wierszu 0, w górę ujemne y; wrogowie idą z prawej. */
-(()=>{const PX=window.PX;   // w grze jest globalna funkcja PX (ui.js), rejestr bierzemy z window
+(()=>{const PX=window.PIX;   // rejestr pixel art (PX w grze to funkcja)
 const {layer,rect,ell,line,poly}=PX;
 const L=(...f)=>layer(p=>f.forEach(g=>g(p)));          // kształty jednej warstwy, z konturem
 const N=(...f)=>layer(p=>f.forEach(g=>g(p)),false);    // bez konturu: blaski, napisy, cienie
@@ -18,9 +18,9 @@ const txtW=s=>s.length*4-1;
 // koło: opona, bieżnik obraca się z kątem a, felga z konturem, piasta
 function wheel(cx,cy,r,a,rim,n){
  L(ell(cx,cy,r,r,'#1e1e22'));
- N(p=>{for(let i=0;i<n;i++){const q=a+i*Math.PI*2/n;p(Math.round(cx+Math.cos(q)*(r-0.6)),Math.round(cy+Math.sin(q)*(r-0.6)),'#4a4a52');}});
+ N(p=>{for(let i=0;i<n;i++){const q=a+i*Math.PI*2/n;p(Math.round(cx+Math.cos(q)*(r-0.6)),Math.round(cy+Math.sin(q)*(r-0.6)),'#62626c');}});
  L(ell(cx,cy,r*0.48,r*0.48,rim));
- N(line(Math.round(cx-Math.cos(a)*r*0.4),Math.round(cy-Math.sin(a)*r*0.4),Math.round(cx+Math.cos(a)*r*0.4),Math.round(cy+Math.sin(a)*r*0.4),'#00000055'),p=>p(Math.round(cx),Math.round(cy),'#2a2a2a'));
+ N(line(Math.round(cx-Math.cos(a)*r*0.4),Math.round(cy-Math.sin(a)*r*0.4),Math.round(cx+Math.cos(a)*r*0.4),Math.round(cy+Math.sin(a)*r*0.4),'#8a6a1a'),p=>p(Math.round(cx),Math.round(cy),'#2a2a2a'));
 }
 function smoke(x,y,t,k,col){const n=3;N(p=>{for(let i=0;i<n;i++){const q=(t*k+i/n)%1,r=0.6+q*2.2,cx=x+q*3+Math.sin(t*3+i)*1,cy=y-q*9;ell(cx,cy,r,r,col||'rgba(110,110,110,'+(0.6*(1-q)).toFixed(2)+')')(p);}});}
 
@@ -59,7 +59,7 @@ D.kombajn=(d,t)=>{const rev=d&&d.rev,j=rev?fr(t,14,2):0;
 D.relikwia=(d,t)=>{const pulse=0.5+0.5*Math.sin(t*3),wave=d&&d.kick>0?1-d.kick/0.25:-1;
  N(ell(0,-15,15+pulse*2,13+pulse*2,'rgba(255,230,140,'+(0.18+pulse*0.14).toFixed(2)+')'),ell(0,-15,10,9,'rgba(255,240,170,'+(0.2+pulse*0.15).toFixed(2)+')'));
  N(p=>{for(let i=0;i<8;i++){const q=i/8*Math.PI*2+fr(t,4,8)*Math.PI/16;line(Math.round(Math.cos(q)*11),Math.round(-15+Math.sin(q)*9),Math.round(Math.cos(q)*(14+pulse*2)),Math.round(-15+Math.sin(q)*(12+pulse*2)),i%2?'#fff0a0':'#ffe070')(p);}});
- if(wave>=0)N(p=>{const r=6+wave*16;for(let i=0;i<40;i++){const q=i/40*Math.PI*2;p(Math.round(Math.cos(q)*r),Math.round(-12+Math.sin(q)*r*0.6),'rgba(255,250,200,'+(1-wave).toFixed(2)+')');}});
+ if(wave>=0)N(p=>{const r=6+wave*16;for(let i=0;i<40;i++){const q=i/40*Math.PI*2;p(Math.round(Math.cos(q)*r),Math.round(-12+Math.sin(q)*r*0.6),wave<0.6?'#fff6c0':'#f0e090');}});
  shadow(0,11);
  // stołek z koronkową serwetką
  L(rect(-8,-6,2,6,C.wood),rect(6,-6,2,6,C.wood));L(rect(-10,-9,20,3,C.woodL));
@@ -70,7 +70,7 @@ D.relikwia=(d,t)=>{const pulse=0.5+0.5*Math.sin(t*3),wave=d&&d.kick>0?1-d.kick/0
  N(line(-13,-19+fl,-9,-16,'#c8c2b8'),line(13,-19+fl,9,-16,'#c8c2b8'));
  // puszka
  L(rect(-7,-19,14,9,C.gold));
- N(rect(-7,-16,14,3,C.green),p=>{['#ff6a8a','#ffe060','#7ad0ff','#ff9a40','#c080ff'].forEach((c,i)=>p(-6+i*3,-15,c));},rect(3,-19,4,9,'rgba(0,0,0,.18)'),rect(-6,-19,1,9,'#f6d870'));
+ N(rect(-7,-16,14,3,C.green),p=>{['#ff6a8a','#ffe060','#7ad0ff','#ff9a40','#c080ff'].forEach((c,i)=>p(-6+i*3,-15,c));},rect(4,-16,3,3,'#2c6a2a'),rect(4,-19,3,3,'#b08a20'),rect(4,-13,3,3,'#b08a20'),rect(-6,-19,1,9,'#f6d870'));
  L(rect(-8,-21,16,2,C.red));N(rect(-4,-21,8,1,'#f0d060'));
  if(hurt(d))N(line(-7,-13,-4,-11,'#5a3a10'),p=>{p(5,-18,'#5a3a10');p(6,-17,'#5a3a10');});
  // świecące okruchy
@@ -79,7 +79,7 @@ D.relikwia=(d,t)=>{const pulse=0.5+0.5*Math.sin(t*3),wave=d&&d.kick>0?1-d.kick/0
 
 /* Goły kabel pod prądem: słup z izolatorami, tabliczka „uwaga”, kabel wije się po trawie i iskrzy */
 D.kabel=(d,t)=>{const on=Math.sin(t*9)>0.1;
- N(ell(3,-1,13,1.5,'rgba(30,20,10,.4)'));
+ N(ell(3,-1,13,1.5,'rgba(30,20,10,.4)'));if(Math.sin(t*9)>0.1)N(ell(6,-5,10,4,'rgba(255,240,120,.2)'));
  L(rect(-15,-24,2,24,C.wood));L(rect(-18,-22,8,1,C.woodD));
  L(rect(-18,-24,1,2,'#eeeee6'),rect(-11,-24,1,2,'#eeeee6'));
  // żółta tabliczka z piorunem
@@ -90,16 +90,15 @@ D.kabel=(d,t)=>{const on=Math.sin(t*9)>0.1;
  L(p=>{for(let i=1;i<pts.length;i++)line(Math.round(pts[i-1][0]),Math.round(pts[i-1][1]),Math.round(pts[i][0]),Math.round(pts[i][1]),'#262626')(p);});
  N(p=>{for(const x of [-2,-1,8,9,17,18])p(x,-3+(Math.sin((x+4)*0.7)>0?-1:0),'#e0883a');});
  if(on){const f=fr(t,12,3);
-  N(p=>{for(let k=0;k<2;k++){const sx=-1+((f*7+k*9)%20);for(const [dx,dy] of [[0,-4],[1,-5],[0,-6],[1,-7],[2,-8],[1,-9]])p(sx+dx,dy,k?'#fff6a0':'#ffffff');}},
-   ell(6,-4,9,3,'rgba(255,240,120,.18)'));}
+  N(p=>{for(let k=0;k<2;k++){const sx=-1+((f*7+k*9)%20);for(const [dx,dy] of [[0,-4],[1,-5],[0,-6],[1,-7],[2,-8],[1,-9]])p(sx+dx,dy,k?'#fff6a0':'#ffffff');}});}
 };
 
 /* Sklep mięsny: szyld MIĘSO, szynka na haku albo „NIE MA” */
 D.lancuch=(d,t)=>{const ready=!d||(d.reload>0?false:!(d.rev&&(t%6)>4));
  shadow(0,15);
  L(rect(-9,-29,2,29,C.woodD),rect(7,-29,2,29,C.woodD));
- L(rect(-14,-34,28,11,C.cream));N(rect(7,-34,7,11,'rgba(0,0,0,.08)'),rect(-12,-32,24,1,C.red));
- const s='MIESO';N(txt(s,-Math.floor(txtW(s)/2),-30,C.red),p=>{p(1,-24,C.red);p(2,-23,C.red);});   // ogonek Ę
+ L(rect(-14,-34,28,11,C.cream));N(rect(8,-34,6,11,'#e2d8b8'),rect(-12,-32,24,1,C.red));
+ const s='MIESO';N(txt(s,-Math.floor(txtW(s)/2),-30,C.red),p=>{p(1,-25,C.red);p(2,-24,C.red);});   // ogonek Ę
  if(ready){const sw=Math.round(Math.sin(t*2)*1);
   N(line(0,-22,sw,-19,'#2a2a2a'));
   L(ell(sw,-13,4,5.5,C.pink));N(ell(sw+1,-12,2,3,C.pinkL),p=>{p(sw-2,-15,'#ffffff');});
@@ -113,7 +112,7 @@ D.lancuch=(d,t)=>{const ready=!d||(d.reload>0?false:!(d.rev&&(t%6)>4));
 /* Gnojówka: kałuża maleje z czasem życia, przewrócone wiadro, smród i muchy */
 D.rozlew=(d,t)=>{const n=d&&d.life!=null?clamp(d.life/10,0.6,3):3;
  L(ell(3,-2,6+n*3,1.6+n*0.6,'#6a5226'));
- N(ell(1,-2,3+n,1,'#8a6e30'),ell(7,-2,2+n*0.6,0.6,'rgba(150,170,60,.85)'));
+ N(ell(1,-2,3+n,1,'#8a6e30'),ell(7,-2,2+n*0.6,0.6,'#7c7a30'));
  N(p=>{for(let i=0;i<3;i++){const q=(t*0.9+i/3)%1;if(q<0.7)p(-1+i*4,Math.round(-3-q*2),q<0.4?'#c8be78':'#a89a5a');}});
  // wiadro na boku
  L(poly([[-17,-7],[-10,-8],[-9,-1],[-16,-1]],C.wood));N(line(-16,-5,-10,-6,'#3a3a3a'),line(-15,-2,-10,-3,'#3a3a3a'));L(ell(-9,-4,1,3,C.dirtD));
@@ -128,7 +127,7 @@ D.rozlew=(d,t)=>{const n=d&&d.life!=null?clamp(d.life/10,0.6,3):3;
 D.aparatura=(d,t)=>{const rise=d&&!d.armed?Math.round(clamp((d.armT||0)/5,0,1)*7):0,armed=!d||d.armed,on=d&&d.armed&&Math.sin(t*10)>0;
  const cut=f=>p=>f((x,y,c)=>{if(y+rise<-1)p(x,y+rise,c);});     // poniżej ziemi nie widać
  L(cut(ell(0,-8,7,6,'#c06a34')));
- N(cut(ell(-2,-9,3,3,'#e89a62')),cut(p=>{p(-3,-11,'#ffd0a8');p(-4,-10,'#ffd0a8');}),cut(rect(4,-12,3,8,'rgba(60,20,5,.35)')));
+ N(cut(ell(-2,-9,3,3,'#e89a62')),cut(p=>{p(-3,-11,'#ffd0a8');p(-4,-10,'#ffd0a8');}),cut(rect(4,-11,3,6,'#8e4620')));
  // wężownica
  L(cut(p=>{line(1,-14,5,-17,'#b8622e')(p);line(5,-17,8,-15,'#b8622e')(p);line(8,-15,9,-11,'#b8622e')(p);}));
  // manometr
@@ -136,7 +135,6 @@ D.aparatura=(d,t)=>{const rise=d&&!d.armed?Math.round(clamp((d.armT||0)/5,0,1)*7
  const na=armed?(d?1.2+Math.sin(t*20)*0.15:0.6):-0.8;N(cut(p=>p(Math.round(-3+Math.sin(na)*1.4),Math.round(-9-Math.cos(na)*1.4),'#b8241c')));
  // lampka
  L(cut(rect(3,-16,3,2,armed?(on?'#ff2a2a':'#8a1010'):'#3a2a1a')));
- if(on)N(cut(ell(4,-15,4,3,'rgba(255,60,40,.35)')));
  if(hurt(d))N(cut(line(-5,-6,-2,-4,'#3a1004')));
  // kopczyk ziemi
  L(poly([[-14,0],[-11,-3],[-5,-4],[5,-4],[11,-3],[14,0]],C.dirt));
@@ -148,7 +146,7 @@ D.aparatura=(d,t)=>{const rise=d&&!d.armed?Math.round(clamp((d.armT||0)/5,0,1)*7
 D.flaszka=(d,t)=>{const sx=d?[0,1,0,-1][fr(t,25,4)]:0,f=fr(t,10,3);
  shadow(0,6);
  L(rect(sx-4,-17,9,16,'#c8ebd8'),rect(sx-2,-23,5,6,'#c8ebd8'));
- N(rect(sx-4,-9,9,8,'#f0d76e'),rect(sx-4,-9,9,1,'#fff2b0'),rect(sx-3,-16,1,13,'rgba(255,255,255,.7)'));
+ N(rect(sx-4,-9,9,8,'#f0d76e'),rect(sx-4,-9,9,1,'#fff2b0'),rect(sx-3,-16,1,13,'#eef8f2'));
  L(rect(sx-3,-14,7,4,'#efe6c8'));N(txt('XXX',sx-5,-14,'#8a1a20'));
  // szmata
  L(poly([[sx-2,-23],[sx+3,-23],[sx+4,-27],[sx+1,-25],[sx-3,-28]],'#e8dcc0'));
@@ -191,7 +189,7 @@ D.ursus=(d,t)=>{const mv=!!(d&&d.moving),b=mv?fr(t,12,2):0,ox=0,oy=-b;
  L(line(-1,-20+oy,-3,-26+oy,'#222'));L(rect(-6,-27+oy,5,1,'#333'));
  // maska z kratką i światłem
  L(rect(-2,-20+oy,20,9,C.red));
- N(rect(-2,-20+oy,18,1,C.redL),rect(-2,-12+oy,20,1,C.redD),txt('C330',3,-18+oy,'#ffffff'));
+ N(rect(-2,-20+oy,18,1,C.redL),rect(-2,-12+oy,20,1,C.redD),txt('330',5,-18+oy,'#ffffff'));
  L(rect(17,-19+oy,2,7,'#2a2a2a'));N(p=>{for(let i=0;i<3;i++)p(18,-18+i*2+oy,'#777');});
  L(rect(15,-17+oy,2,2,'#fff4c0'));
  L(rect(0,-12+oy,14,5,'#3a3a3a'));N(p=>{for(let i=0;i<4;i++)p(2+i*3,-10+oy,'#555');});

@@ -48,6 +48,7 @@ function human(k,st,s){
  layer(legB(0,w.b,w.bl,s.look,true,s.boot));
  layer(legB(-2,-2+w.a,w.al,s.look,false,s.boot));
  if(s.legsOver)s.legsOver(o);
+ layer(rect(o.tx+2,o.ty+10,10,HIP-o.ty-9,s.hips||s.look[0]));   // biodra: bez dziury między tułowiem a nogami
  layer(stampP(s.torso,o.tx,o.ty,s.pal));
  if(s.behindHead)s.behindHead(o);
  layer(stampP(typeof s.head==='function'?s.head(o):s.head,o.hx,o.hy,s.pal));
@@ -70,7 +71,7 @@ PIX.E.milicjant=st=>human('milicjant',st,{head:MIL_HEAD,torso:MIL_TORSO,look:['#
  farArm(o){arm(1,15+o.oy,1-o.sw,24+o.oy,'M','M','s');},
  nearArm(o){const by=o.oy;
   // pałka: przy chodzie oparta o bark, przy biciu zamach zza głowy i łup
-  const H=o.e<0?[[-6+o.sw,20],[-1,10]]:[[[1,9],[6,2]],[[-4,7],[-9,0]],[[-12,18],[-19,21]],[[-10,20],[-16,25]]][o.e];
+  const H=o.e<0?[[-6+o.sw,20],[-10+o.sw,26]]:[[[1,9],[6,2]],[[-4,7],[-9,0]],[[-12,18],[-19,21]],[[-10,20],[-16,25]]][o.e];
   const [[hx,hy],[bx,byy]]=H;
   if(o.e===0||o.e===1){baton(hx,hy+by,bx,byy+by);arm(-1,15+by,hx,hy+by,'m','m','S');}
   else{arm(-1,15+by,hx,hy+by,'m','m','S');baton(hx,hy+by,bx,byy+by);fist(hx,hy+by,'S');}}
@@ -122,7 +123,7 @@ PIX.E.lunatyk=st=>{const o=human('lunatyk',st,{head:LUN_HEAD,torso:LUN_TORSO,loo
  farArm(o){const by=o.oy;arm(1,15+by,-9+o.lean,14+by,'L','L','s');layer(stampP(TEDDY,-12+o.lean,15+by));fist(-9+o.lean,14+by,'s');},
  nearArm(o){const by=o.oy,dy=Math.round(Math.sin(o.t*2));arm(-1,15+by,-13+o.lean,13+by+dy,'l','l','S');}});
  // unoszące się zetki
- const Z=["1111","..1.",".1..","1111"],z=["111",".1.","111"];
+ const Z=["11111","...1.","..1..",".1...","11111"],z=["111","..1",".1.","111"];
  for(const [m,ph,dx] of [[Z,0,0],[z,0.5,5]]){const q=((o.t*0.6+ph)%1),x=4+dx+Math.round(Math.sin(q*6)),y=Math.round(-1-q*8);
   if(q<0.9)layer(p=>m.forEach((r,j)=>[...r].forEach((c,i)=>c==='1'&&p(x+i,y+j,'#dce6ff'))),false);}
 };

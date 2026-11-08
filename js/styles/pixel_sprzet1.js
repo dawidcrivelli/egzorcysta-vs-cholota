@@ -143,7 +143,7 @@ PIX.D.armata=(d,t)=>{
  L(S(ell(R(m[0]),R(m[1]),1.5,3.5,'#8a6420'),ell(R(c[0]),R(c[1]),2,2,'#8a6420')));
  // koło na szprychach
  const wr=t*0;L(S(ell(-3,-6,5.5,5.5,'#3a3a3a'),ell(-3,-6,4.3,4.3,'#5a3e24'),p=>{for(let i=0;i<4;i++){const an=i*Math.PI/4+wr;for(let r=-4;r<=4;r++)p(R(-3+Math.cos(an)*r),R(-6+Math.sin(an)*r),'#8a6238');}},rect(-4,-7,2,2,'#3a3a3a')));
- for(const [x,y] of [[8,-2],[12,-2],[10,-5]])L(S(ell(x,y,2,2,'#1c1c1c'),rect(x-1,y-1,1,1,'#7a7a7a')));
+ L(p=>{for(const [x,y] of [[7,-3],[12,-3],[9.5,-7]]){ell(x,y,1.8,1.8,'#1c1c1c')(p);p(R(x)-1,y-1,'#8a8a8a');}});
  if(d&&d.kick>0.15){const f=rot([19,0],o,A);   // błysk i dym z lufy
   L(S(ell(R(f[0]),R(f[1]),3.5,3,'#ffc85a'),ell(R(f[0]),R(f[1]),1.8,1.5,'#fff6c0')),false);
   for(let i=0;i<3;i++)puff(R(f[0]+3+i*3),R(f[1]-2-i*2),1.5+i,'rgba(200,200,200,.6)');}

@@ -76,8 +76,8 @@ E.kura=st=>{
   L(line(hx-5,hy,hx-3,hy,'#e0a020'),pt(hx-4,hy+1,'#e0a020'));L(pt(hx-3,hy+2,'R'),pt(hx-3,hy+3,'R'));
   N(rect(hx-2,hy-2,2,2,'#fff8a0'),pt(hx-2+(cross?1:0)+ex,hy-1+(cross?0:-1)*0,'K'));};
  const e1=Math.sin(t*20)>0?0:1;
- head(-1,20-hop,-1,13-hop+peck[1],0,true);
- head(-4,22-hop,-7,17-hop+peck[0],e1,false);
+ head(1,21-hop,3,12-hop+peck[1],0,true);
+ head(-4,22-hop,-8,17-hop+peck[0],e1,false);
 };
 
 /* ---------- Burak mutant i buraczek ---------- */
@@ -116,14 +116,14 @@ E.barszcz=st=>{
  L(p=>{for(let y=7;y<=35;y++){const x=sx(y);p(x-1,y,'#7aa84a');p(x,y,'#5f8a3a');p(x+1,y,'#3f6a24');}});
  N(p=>{for(let i=0;i<8;i++){const y=10+i*3;p(sx(y)+(i%2?1:-1),y,'#6a2a5a');}});
  // liście ząbkowane, na zmianę
- for(const [y,d] of [[29,-1],[22,1],[15,-1]]){const x=sx(y),wv=Math.round(Math.sin(t*3+y)*0.6);
+ for(const [y,d] of [[31,-1],[26,1],[13,-1]]){const x=sx(y),wv=Math.round(Math.sin(t*3+y)*0.6);
   L(shade(poly([[x,y],[x+d*4,y-3+wv],[x+d*6,y-2],[x+d*8,y-4+wv],[x+d*10,y-1],[x+d*8,y+1],[x+d*9,y+3],[x+d*4,y+2]],'Z'),['#8cc860','#5f8a3a','#3f6a24']));}
  // parasol
  const tx=sx(7);for(let i=-4;i<=4;i++)N(line(tx,8,tx+i*2,5,'#5f8a3a'));
  L(p=>{for(let y=1;y<=5;y++){const w=Math.round(11*Math.sqrt(1-((5-y)/4.6)**2));for(let x=-w;x<=w;x++)p(tx+x,y,((x+y)%3)?'#f2efe2':'#d8d2be');}});
  // oczy i złośliwy uśmiech
- const ex=sx(24);N(rect(ex-3,23,2,2,'#ffe060'),rect(ex+1,23,2,2,'#ffe060'),pt(ex-3,24,'K'),pt(ex+1,24,'K'),line(ex-4,21,ex-1,22,'K'),line(ex+3,21,ex,22,'K'),
-  line(ex-2,27,ex+2,27,'#2a0818'),pt(ex-3,26,'#2a0818'),pt(ex+3,26,'#2a0818'));
+ const ex=sx(19);N(rect(ex-3,18,2,2,'#ffe060'),rect(ex+1,18,2,2,'#ffe060'),pt(ex-3,19,'K'),pt(ex+1,19,'K'),line(ex-4,16,ex-1,17,'K'),line(ex+3,16,ex,17,'K'),
+  line(ex-2,22,ex+2,22,'#2a0818'),pt(ex-3,21,'#2a0818'),pt(ex+3,21,'#2a0818'));
  // kapiący jad
  for(let i=0;i<3;i++){const p=((t*0.8+i/3)%1);N(pt(-7+i*7+sx(20),14+Math.round(p*24),'rgba(200,255,90,'+(0.9-p*0.6).toFixed(2)+')'));}
 };
@@ -158,12 +158,12 @@ const STONE=['#f2e8cc','#d9ccb0','#b3a58a'];
 E.palac=st=>{
  const t=st.t||0,f=fr('palac',st),hp=st.hp==null?1:st.hp,talk=st.talk&&Math.sin(t*10)>0;
  const lift=st.walk?[3,1,0,0][f]:0,lift2=st.walk?[0,0,3,1][f]:0,b=st.walk&&(f===1||f===3)?-1:0;
- const leg=(x,lf,far)=>{const c=far?'#c98a2a':'#e8a83a';L(line(x,28,x+3,33-lf,c,2),line(x+3,33-lf,x-1,38-lf,c,2));
+ const leg=(x,lf,far)=>{const c=far?'#c98a2a':'#e8a83a';L(line(x,27,x+4,33-lf,c,3),line(x+4,33-lf,x-1,38-lf,c,2));
   L(line(x-1,39-lf,x-5,39-lf,c),line(x-1,39-lf,x-4,37-lf,c),line(x,39-lf,x+2,39-lf,c));};
- leg(4,lift2,true);
+ leg(5,lift2,true);
  const Y=y=>y+b;
  // pierze pod pałacem
- L(poly([[-10,Y(27)],[10,Y(27)],[8,Y(31)],[5,Y(29)],[2,Y(32)],[-1,Y(29)],[-4,Y(32)],[-7,Y(29)],[-9,Y(31)]],'#efe8dc'));
+ L(poly([[-8,Y(27)],[8,Y(27)],[6,Y(30)],[3,Y(29)],[0,Y(31)],[-3,Y(29)],[-6,Y(30)]],'#efe8dc'));
  // skrzydła boczne, kondygnacje
  L(poly([[-14,Y(18)],[-20,Y(21)],[-20,Y(26)],[-14,Y(26)]],'#9aa0a6'),poly([[14,Y(18)],[20,Y(21)],[20,Y(26)],[14,Y(26)]],'#8a8e94'));
  L(shade(rect(-14,Y(18),29,10,'G'),STONE));
@@ -187,6 +187,6 @@ E.palac=st=>{
  if(hp<0.6)N(line(-12,Y(19),-9,Y(22),'K'),line(-9,Y(22),-11,Y(25),'K'),line(6,Y(13),8,Y(16),'K'));
  if(hp<0.3){N(line(10,Y(19),7,Y(23),'K'),line(7,Y(23),9,Y(26),'K'),line(-4,Y(8),-2,Y(11),'K'));
   for(let i=0;i<3;i++){const q=(t*0.7+i/3)%1;N(pt(9+i*2,Y(Math.round(17-q*10)),'rgba(90,90,90,'+(0.7*(1-q)).toFixed(2)+')'),pt(10+i*2,Y(Math.round(17-q*10)),'rgba(90,90,90,'+(0.5*(1-q)).toFixed(2)+')'));}}
- leg(-4,lift,false);
+ leg(-5,lift,false);
 };
 })();

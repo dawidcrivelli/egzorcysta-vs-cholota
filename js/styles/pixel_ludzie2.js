@@ -84,7 +84,7 @@ PIX.E.carski=st=>{const r=rig('carski',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean;
 };
 
 /* ===================== OKUPANT Z ’44: feldgrau, hełm (spada przy helm=0), oficerki ===================== */
-const OK_H=["..............","..............","..............","..............","...SSSSSSSs4..","..SKKSSSSSs44.",
+const OK_H=["..............","..............","..............","..............","...SSSSSSSs4..","..SkkSSSSSs44.",
  "..SWKSSSSs4s4.","SSSSSSSSSSsS4.","sSSSSSSSSSs4s.","..SkkSSSSs44..","...SSSSSSs4...","...SSSSSs4....","....ssss......"];
 const OK_HAIR=["....dddddd....","...ddddddddd..","..dddddddddd..","..d.d.ddddddd."];
 const OK_HELM=["....hhhhhh....","..hhHHhhhhhv..",".hhHhhhhhhhvv.","hhhhhhhhhhhhvv","vvvvvvvvvvvvvv"];
@@ -142,7 +142,7 @@ const BARREL=[".JJJJJJJJJ.","J000000000J","kkkkkkkkkkk","j0000000000","jjj0W0W00
 PIX.H=t=>{const c=(t%2.8)/2.8,bob=Math.sin(t*2.2)>0.5?-1:0,by=bob;
  // ręka z kropidłem: zamach do góry (0..0.3), szybki strzał (0.3..0.4), powrót
  const ph=c<0.3?0:c<0.4?1:c<0.75?2:3;
- const H=[[-4,8],[-14,12],[-13,17],[-9,20]][ph],ang=[-2.1,-0.35,0.2,0.7][ph];H[1]+=by;
+ const H=[[-10,10],[-14,12],[-13,17],[-9,20]][ph],ang=[1.3,-0.35,0.2,0.7][ph];H[1]+=by;
  // beczka na plecach i szelka
  layer(st2(BARREL,5,11+by));
  layer(rect(8,9+by,4,2,'#8a8e94'));

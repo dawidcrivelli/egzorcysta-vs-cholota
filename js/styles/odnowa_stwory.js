@@ -154,7 +154,7 @@ X.kura=(st,t)=>{
   if(crazy){ctx.save();ctx.shadowColor='#ffe94a';ctx.shadowBlur=5;eye(-r*0.25,-r*0.2,r*0.42,{white:'#fffbe0',pr:0.22,px:Math.sin(t*23)*r*0.12,py:Math.cos(t*19)*r*0.08});ctx.restore();ln(-r*0.65,-r*0.72,-r*0.05,-r*0.82,OL,OLW);}
   else{eye(-r*0.25,-r*0.18,r*0.3,{lid:0.45,pr:0.5});ctx.save();ctx.translate(r*0.25,-r*0.55);ctx.rotate(0.5);rect('#f6f0e0',-r*0.4,-r*0.1,r*0.8,r*0.26);ln(-r*0.15,-r*0.08,-r*0.15,r*0.14,'#c0b8a0',0.4);ln(r*0.15,-r*0.08,r*0.15,r*0.14,'#c0b8a0',0.4);ctx.restore();}
   ctx.restore();};
- head([-6,-46],-4,-66,7,true,false);
+ head([-4,-47],3,-70,7,true,false);
  head([-12,-42],-19,-58,8,false,true);
  // spadające piórko
  if(w){const p=(t*0.6)%1;ctx.save();ctx.translate(14+p*10,-50+p*44);ctx.rotate(Math.sin(t*5)*0.8);ctx.beginPath();ctx.ellipse(0,0,1.2,3.4,0,0,7);fs('#f2ece0',OLW*0.5);ctx.restore();}
@@ -285,9 +285,10 @@ X.palac=(st,t)=>{
  const w=st.walk,s=w?Math.sin(t*3):0,l1=w?Math.max(0,s)*7:0,l2=w?Math.max(0,-s)*7:0,hp=st.hp==null?1:st.hp,talk=st.talk,eat=st.eat;
  ground(46);
  const Y='#e8a83a';
- const leg=(x,lf,far)=>{const c=far?tint(Y,0.8):Y,hip=[x,-33],kn=[x+9,-19-lf],an=[x-1,-6-lf];
+ const leg=(x,lf,far)=>{const c=Y,hip=[x,-33],kn=[x+9,-19-lf],an=[x-1,-6-lf];
   chain([hip,kn,an],[9,7,6],c,far);
   for(const [dx,dy] of [[-12,6],[-8,6.4],[-4,6.2],[5,4.6]]){const tip=[an[0]+dx,an[1]+dy];chain([an,tip],[3,2],c,far);Pth([[tip[0]-(dx<0?2.4:-2),tip[1]],[tip[0],tip[1]-1.2],[tip[0],tip[1]+1.2]]);fs('#3a3020',OLW*0.5);}
+  if(far){}
   // pióra na udach
   for(let i=0;i<5;i++){ctx.beginPath();ctx.ellipse(hip[0]-6+i*3,hip[1]+2+(i%2)*2,2.4,4.6,(i-2)*0.25,0,7);fs(far?'#d8d2c4':'#f4efe4',OLW*0.6);}};
  leg(12,l2,true);
