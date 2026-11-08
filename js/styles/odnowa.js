@@ -118,6 +118,7 @@ function walk(t,sp,amp,lean){
 }
 const stand=(t,lean)=>({ph:0,lean:lean||0.04,tilt:0,legs:[{th:0.16,kn:0.06},{th:-0.12,kn:0.08}],arms:[{sh:0.12+0.04*Math.sin(t*2),el:0.3},{sh:0.08,el:0.3}]});
 function pose(k,st){
+ if(ODN.P[k])return ODN.P[k](st);
  const t=st.t||0,sp=16*(st.sp||0.22),eat=st.eat,idle=!st.walk&&!eat,s=Math.max(0,Math.sin(t*9));
  let p;
  if(k==='trup'){
@@ -298,10 +299,21 @@ C.komunista={R:18.5,leg:[14.5,14.5],legW:[11,9.6,8.2],arm:[14,13],armW:[10,8.6,7
   const sx=-R*0.42,sy=-R*0.95,s=R*0.2,pts=[];for(let i=0;i<10;i++){const a=-PI/2+i*PI/5,r=i%2?s*0.42:s;pts.push([sx+Math.cos(a)*r*0.8,sy+Math.sin(a)*r]);}Pth(pts);fs('#d42a1e',OLW*0.6);}
 };
 
+/* rejestr dla dalszych plików odnowa_*.js: C = postaci na szkielecie, P = ich pozy (st→poza),
+   X = chołota bez szkieletu (st,t) w jednostkach 100 = wzrost, D = sprzęt (d,t) w jednostkach 72 = pole jak DRAW w grze, H = Zdzichu */
+const ODN=window.ODN={C,P:{},X:{},D:{},H:null,figure,pose,walk,stand,eyes,F,ell,oell,dot,curve,rotp,claws,holdGasior,holdBanner};
 STYLES.push({id:'odnowa',name:'Odnowa: nowe figury 3/4',desc:'Kontur i cieniowanie jak w grze, ale nowe sylwetki i proporcje (duża głowa, krępe ciało) oraz twarz w 3/4 zgodna z ciałem.',
+ en:k=>!!(C[k]||ODN.X[k]),def:k=>!!ODN.D[k],hero:()=>!!ODN.H,
  draw(k,x,y,h,st){
-  const c=C[k],sc=h/100,prev=OLW;
+  const sc=h/100,prev=OLW;
   ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);OLW=clamp(1.8/sc,0.9,3.2);CS=st;
-  try{figure(c,pose(k,st),st.t||0,st);}finally{OLW=prev;ctx.restore();}
- }});
+  try{if(C[k])figure(C[k],pose(k,st),st.t||0,st);else if(ODN.X[k])ODN.X[k](st,st.t||0);}finally{OLW=prev;ctx.restore();}
+ },
+ drawDef(k,x,by,sz,d,t){
+  const sc=sz/72,prev=OLW;ctx.save();ctx.translate(x,by);ctx.scale(sc,sc);OLW=clamp(1.7/sc,0.9,4);
+  try{if(d&&d.hitT>0)ctx.translate(Math.sin((t||0)*80)*1.4,0);ODN.D[k](d,t||0);}finally{OLW=prev;ctx.restore();}
+ },
+ drawHero(x,y,h,t){const sc=h/100,prev=OLW;ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);OLW=clamp(1.8/sc,0.9,3.2);CS={t};
+  try{ODN.H(t);}finally{OLW=prev;ctx.restore();}}
+});
 })();
