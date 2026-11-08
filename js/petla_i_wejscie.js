@@ -29,10 +29,8 @@ let last=0;
 let WARM=[],warmCtx=null;
 function queueWarm(){
  if(!G||G.evil===undefined&&false)return;WARM=[];const ks=G.evil?G.cards.filter(k=>UNIT[k]):nightEnemies(G.lv);
- for(const k of ks){const d=EN[k];if(!d)continue;const h=k==='palac'?L.rowH*2.7:d.boss?L.rowH*1.7:d.small?L.rowH*0.52:L.rowH*0.88;
-  const sp=d.sp,P=NONH_P[k]||Math.PI*2/(16*sp*(k==='mumia'?0.9:k==='boss'?1.6:1)),n=NONH_P[k]?8:10;
-  for(let i=0;i<n;i++)WARM.push({k,h,st:{t:i/n*P+1e-4,walk:true,sp,shield:d.shield||0,helm:d.helm||0,hp:1}});
-  for(let i=0;i<6;i++)WARM.push({k,h,st:{t:i/6*(Math.PI*2/((k==='trup'||k==='mumia')?10:9))+1e-4,eat:true,walk:false,sp,shield:d.shield||0,helm:d.helm||0,hp:1}});}
+ for(const k of ks){const d=EN[k];if(!d)continue;const h=L.rowH*enemyHR(k),b={sp:d.sp,shield:d.shield||0,helm:d.helm||0,hp:1};
+  for(const m of [{walk:true},{eat:true,walk:false}]){const{P,n}=cycleOf(k,m.eat?m:b);for(let i=0;i<n;i++)WARM.push({k,h,st:{...b,...m,t:i/n*P+1e-4}});}}
 }
 function warmStep(){
  if(!WARM.length)return;if(!warmCtx){const c=document.createElement('canvas');c.width=c.height=1;warmCtx=c.getContext('2d');}

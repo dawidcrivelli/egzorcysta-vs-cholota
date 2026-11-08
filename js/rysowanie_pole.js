@@ -27,7 +27,9 @@ function drawDefOnGrid(d){
  if(d.k==='aparatura'&&!d.armed){const f=1-d.armT/DEF.aparatura.arm;ctx.strokeStyle='#ffcf4a';ctx.lineWidth=2.4;ctx.beginPath();ctx.arc(cx,by-sz*0.7,6,-Math.PI/2,-Math.PI/2+f*Math.PI*2);ctx.stroke();}
  if(d.k==='lancuch'&&d.reload>0){const f=1-d.reload/d.def.reload;ctx.strokeStyle='#d8dde2';ctx.lineWidth=2.4;ctx.beginPath();ctx.arc(cx,by-sz*0.5,6,-Math.PI/2,-Math.PI/2+f*Math.PI*2);ctx.stroke();}
 }
-function enemyH(e){return e.k==='palac'?L.rowH*2.7:e.d.boss?L.rowH*1.7:e.d.small?L.rowH*0.52:L.rowH*0.88;}
+/* wysokość wroga w rzędach (gra i przegląd postaci) */
+const enemyHR=k=>k==='palac'?2.7:EN[k].boss?1.7:EN[k].small?0.52:0.88;
+function enemyH(e){return L.rowH*enemyHR(e.k);}
 const EY=r=>L.top+(r+0.94)*L.rowH;
 function drawEnemy(e){
  const x=PX(e.x);let y=EY(e.y);

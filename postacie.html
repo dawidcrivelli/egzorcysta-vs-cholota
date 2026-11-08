@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="icon.svg">
+<title>Przegląd postaci – Egzorcysta vs Chołota</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/postacie.css">
+</head>
+<body>
+<header>
+  <a href="./" title="Do gry">‹ Gra</a>
+  <b>Przegląd postaci</b>
+  <span class="seg" id="tabs"></span>
+  <span class="seg" id="speeds"></span>
+  <select id="bg" title="Tło"></select>
+  <label><input type="checkbox" id="box"> ramka bufora</label>
+  <label><input type="checkbox" id="frames"> klatki</label>
+  <label><input type="checkbox" id="gameScale"> skala z gry</label>
+  <input id="q" type="search" placeholder="szukaj…">
+</header>
+<main id="grid"></main>
+<!-- gra potrzebuje #c przy starcie; tu tylko zaślepka -->
+<canvas id="c" hidden></canvas>
+<script src="js/postacie.js"></script>
+</body>
+</html>

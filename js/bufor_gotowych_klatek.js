@@ -9,12 +9,15 @@ function sprite(key,w,h,ax,ay,fn){
  SPR.set(key,c);return c;
 }
 const NONH_P={palac:Math.PI*2/3,swinia:Math.PI*2/12,kura:Math.PI*2/8,burak:Math.PI*2/9,buraczek:Math.PI*2/9,barszcz:Math.PI*2/6,krowa:Math.PI*2/7,nysa:Math.PI*2/7};
+/* cykl animacji: okres P i liczba klatek n w buforze (gra, rozgrzewka bufora, przegląd postaci) */
+function cycleOf(k,st){
+ if(st.eat)return{P:Math.PI*2/((k==='trup'||k==='mumia')?10:9),n:6};
+ const sp=st.sp||(EN[k]?EN[k].sp:0.22);return{sp,P:NONH_P[k]||Math.PI*2/(16*sp*(k==='mumia'?0.9:k==='boss'?1.6:1)),n:NONH_P[k]?8:10};
+}
 function frameFor(k,st){
- const t=st.t||0;
- if(st.eat){const P=Math.PI*2/(CHR[k]&&(k==='trup'||k==='mumia')?10:9),n=6,i=Math.floor(((t%P)+P)%P/P*n);return{id:'e'+i,t:i/n*P};}
- if(!st.walk){if(NONH_P[k])return{id:'i0',t:0};return{id:'i',t:0};}
- const sp=st.sp||(EN[k]?EN[k].sp:0.22);let P=NONH_P[k]||Math.PI*2/(16*sp*(k==='mumia'?0.9:k==='boss'?1.6:1));const n=NONH_P[k]?8:10,i=Math.floor(((t%P)+P)%P/P*n);
- return{id:'w'+i+'s'+Math.round(sp*100),t:i/n*P};
+ if(!st.eat&&!st.walk)return{id:NONH_P[k]?'i0':'i',t:0};
+ const t=st.t||0,{P,n,sp}=cycleOf(k,st),i=Math.floor(((t%P)+P)%P/P*n);
+ return{id:st.eat?'e'+i:'w'+i+'s'+Math.round(sp*100),t:i/n*P};
 }
 function nPalac(t,walk){
  const s=walk?Math.sin(t*3):0,lift=walk?Math.max(0,Math.sin(t*3))*6:0,lift2=walk?Math.max(0,-Math.sin(t*3))*6:0;

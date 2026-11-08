@@ -428,7 +428,7 @@ const DRAW={
   for(const [wx,r] of [[-24,11],[6,7]]){ctx.save();ctx.translate(wx,-r+0.5);ctx.beginPath();ctx.arc(0,0,r,0,7);fs('#141414');ctx.beginPath();ctx.arc(0,0,r*0.5,0,7);fs('#d9b23a',OLW*0.7);ctx.rotate(rev?t*4:0);ctx.fillStyle='#8a6a1a';ctx.fillRect(-0.8,-r*0.45,1.6,r*0.9);ctx.restore();}
   if(rev){ctx.fillStyle='#d9c070';for(let i=0;i<4;i++){const q=(t*3+i/4)%1;ctx.fillRect(34+q*6,-30+q*20,1.4,1.4);}}},
  lopata(d,t){limb([-14,-62],[6,-16],3.6,3.6,'#8a5a32');limb([-20,-63],[-8,-61],3.4,3.4,'#8a5a32');Pth([[0,-20],[12,-14],[16,0],[4,-2],[-4,-12]]);fs('#9aa0a6');ln(4,-12,12,-6,'#d0d4d8',1);},
- ursus(d,t){ursus(0,0,64,t,false);}
+ ursus(d,t){ursus(0,0,64,t,!!(d&&d.moving));}
 };
 function drawDefRaw(k,cx,by,sz,d,tt){
  const sc=sz/72;ctx.save();ctx.translate(cx,by);ctx.scale(sc,sc);const prev=OLW;OLW=clamp(1.7/sc,0.9,4);

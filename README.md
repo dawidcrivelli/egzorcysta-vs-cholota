@@ -6,6 +6,12 @@ Obrona zagrody przed wszystkim, co nadciąga zza miedzy. Obrona w rzędach: rozs
 
 Na telefonie: „Dodaj do ekranu głównego” — działa offline (`sw.js`), zapis gry w `localStorage`.
 
+## Przegląd postaci
+
+`postacie.html` ([online](https://dawidcrivelli.github.io/egzorcysta-vs-cholota/postacie.html)) — duże podglądy chołoty i sprzętu (siatka 2×2, przewijana), rysowane kodem gry:
+stany (idzie, gryzie, mówi, bez transparentu…, sprzęt: ikona, działa, uszkodzony, pokaz), klatki z bufora, ramka bufora, skala z gry, tło, tempo.
+Lokalnie (`python3 -m http.server`) strona przeładowuje się sama po zapisie pliku. Ustawienia też z adresu: `postacie.html?tab=def&frames=1&box=1&q=pila`.
+
 ## Uruchomienie
 
 Otwórz `index.html` w przeglądarce — bez budowania (grafika i dźwięk generowane w kodzie, bez plików).
@@ -39,4 +45,4 @@ Jeden plik (np. do artefaktu Claude): `node build.js` → `dist/egzorcysta-vs-ch
 
 Po zmianie listy plików zaktualizuj `CORE` i podbij `VERSION` w `sw.js`.
 
-`tools/check.sh` — smoke test w headless Chrome (błędy JS z konsoli, zrzut `tmp/shot.png`). `tmp/` — poza repo.
+`tools/check.sh [strona]` — smoke test w headless Chrome (błędy JS z konsoli, zrzut w `tmp/`). `tmp/` — poza repo.
