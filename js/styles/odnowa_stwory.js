@@ -3,7 +3,7 @@
    Kontur OL/OLW i dwa tony jak w grze; oczy zawsze po jednej stronie twarzy (3/4) albo jedno oko z profilu. */
 (()=>{
 const PI=Math.PI,X=ODN.X;
-const E=(x,y,rx,ry,a)=>()=>ctx.ellipse(x,y,rx,ry,a||0,0,7);
+const E=(x,y,rx,ry,a)=>()=>{a=a||0;ctx.moveTo(x+rx*Math.cos(a),y+rx*Math.sin(a));ctx.ellipse(x,y,rx,ry,a,0,7);};
 const PL=p=>()=>{ctx.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length;i++)ctx.lineTo(p[i][0],p[i][1]);ctx.closePath();};
 const el=(x,y,rx,ry,c,a)=>{ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,rx,ry,a||0,0,7);ctx.fill();};
 const oel=(x,y,rx,ry,c,w,a)=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,a||0,0,7);fs(c,w);};
@@ -215,7 +215,7 @@ X.barszcz=(st,t)=>{
   for(let i=0;i<14;i++)ln(-7+(i%4)*5,-18-i*5,-9+(i%4)*5,-20-i*5,'rgba(230,255,200,.5)',0.4);});
  // parasol
  ctx.save();ctx.translate(sw+0.5,-88);for(let i=-5;i<=5;i++){ln(0,0,i*5.6,-11+Math.abs(i)*1.2,OL,2.2);ln(0,0,i*5.6,-11+Math.abs(i)*1.2,G,1.2);}
- blob(()=>{ctx.ellipse(0,-12,31,10,0,PI,0);ctx.closePath();},'#f4f1e4',2.4,()=>{ctx.fillStyle='#d8d2be';for(let i=0;i<20;i++){ctx.beginPath();ctx.arc(-28+i*2.95,-12-Math.sin(i*0.9)*2.4-(i%3)*1.5,1.9,0,7);ctx.fill();}});
+ blob(()=>{ctx.moveTo(-31,-12);ctx.ellipse(0,-12,31,10,0,PI,0);ctx.closePath();},'#fbf9ef',1.2,()=>{ctx.fillStyle='#e6e0cc';for(let i=0;i<20;i++){ctx.beginPath();ctx.arc(-28+i*2.95,-12-Math.sin(i*0.9)*2.4-(i%3)*1.5,1.9,0,7);ctx.fill();}});
  ctx.restore();
  // twarz 3/4 na bulwie
  ctx.save();ctx.translate(-2+sw*0.4,-56);

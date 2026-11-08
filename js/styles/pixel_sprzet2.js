@@ -189,7 +189,7 @@ D.ursus=(d,t)=>{const mv=!!(d&&d.moving),b=mv?fr(t,12,2):0,ox=0,oy=-b;
  L(line(-1,-20+oy,-3,-26+oy,'#222'));L(rect(-6,-27+oy,5,1,'#333'));
  // maska z kratką i światłem
  L(rect(-2,-20+oy,20,9,C.red));
- N(rect(-2,-20+oy,18,1,C.redL),rect(-2,-12+oy,20,1,C.redD),txt('330',2,-18+oy,'#ffffff'));
+ N(rect(-2,-20+oy,18,1,C.redL),rect(-2,-12+oy,20,1,C.redD));
  L(rect(17,-19+oy,2,7,'#2a2a2a'));N(p=>{for(let i=0;i<3;i++)p(18,-18+i*2+oy,'#777');});
  L(rect(15,-17+oy,2,2,'#fff4c0'));
  L(rect(0,-12+oy,14,5,'#3a3a3a'));N(p=>{for(let i=0;i<4;i++)p(2+i*3,-10+oy,'#555');});
@@ -200,6 +200,7 @@ D.ursus=(d,t)=>{const mv=!!(d&&d.moving),b=mv?fr(t,12,2):0,ox=0,oy=-b;
  wheel(R,RY,9.5,mv?t*7:0,'#d8b030',12);
  L(p=>{for(let i=0;i<=16;i++){const q=Math.PI*(1.05+0.9*i/16);for(let w=0;w<2;w++)p(Math.round(R+Math.cos(q)*(11+w)),Math.round(RY+Math.sin(q)*(11+w)),C.red);}});
  wheel(15,-4+oy,4,mv?t*14:0,'#d8b030',6);
+ N(rect(4,-18+oy,12,5,C.red),txt('330',5,-18+oy,'#ffffff'));
  if(mv)N(p=>{for(let i=0;i<4;i++){const q=(t*4+i/4)%1;p(Math.round(-16-q*6),Math.round(-1-q*3),'rgba(120,90,50,'+(0.7*(1-q)).toFixed(2)+')');}});
 };
 })();

@@ -48,8 +48,8 @@ function human(k,st,s){
  layer(legB(0,w.b,w.bl,s.look,true,s.boot));
  layer(legB(-2,-2+w.a,w.al,s.look,false,s.boot));
  if(s.legsOver)s.legsOver(o);
- layer(rect(o.tx+2,o.ty+10,10,HIP-o.ty-9,s.hips||s.look[0]));   // biodra: bez dziury między tułowiem a nogami
  layer(stampP(s.torso,o.tx,o.ty,s.pal));
+ if(s.torso.length<14)layer(rect(o.tx+2,o.ty+s.torso.length,10,HIP-o.ty-s.torso.length,s.hips||s.look[0]),false);   // biodra bez konturu: zakrywa przerwę między tułowiem a nogami
  if(s.behindHead)s.behindHead(o);
  layer(stampP(typeof s.head==='function'?s.head(o):s.head,o.hx,o.hy,s.pal));
  if(s.face)s.face(o);
