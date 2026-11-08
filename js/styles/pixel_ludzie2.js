@@ -97,9 +97,9 @@ PIX.E.okupant=st=>{const r=rig('okupant',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean,e
  const butt=e>=0,ang=butt?[0.3,0.5,-0.05,0.05][e]:0.25,h=butt?[[-4,20],[-2,19],[-10,21],[-8,21]][e]:[-5,21];h[1]+=by;
  arm(1,15+by,h[0]+4,h[1]+1,'f','f','s');
  layer(st2(OK_T,tx,13+by));
+ if(!(st.helm>0))layer(st2(OK_HAIR,hx,by));   // włosy pod głową: kontur głowy robi linię grzywki
  layer(st2(OK_H,hx,by));
  if(st.helm>0)layer(st2(OK_HELM,hx,by));
- else{layer(st2(OK_HAIR,hx,by+1));layer(p=>{p(hx+5,by+1,L('d'));},false);}
  if(r.open)layer(st2(["KK","rK"],hx+3,by+10),false);
  rifle(h[0],h[1],ang,false);
  arm(-1,15+by,h[0],h[1],'F','f','S');
