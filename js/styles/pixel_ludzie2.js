@@ -1,7 +1,7 @@
 /* Piksel 16-bit: przodownik, carski sołdat, okupant, sekretarz i Zdzichu. Ta sama siatka co pixel.js
    (40 wierszy = wzrost, ziemia w wierszu 40, twarzą w lewo), głowa 14×13 od x=-8, tułów od wiersza 13. */
 (()=>{
-const PX=window.PX;if(!PX||!PIX.E)return;   // gra ma własne globalne PX (const), więc tylko przez window
+const PIX=window.PIX;if(!PIX||!PIX.E)return;const PX=PIX;   // rejestr pikseli (PX w grze to inna funkcja)
 const {layer,limb,fist,line,rect,ell,poly,WALK,IDLE}=PX;
 // paleta dodatkowa (litery spoza PAL gry) i dithering w szachownicę
 const LP={o:'#626a40',O:'#7f8852',q:'#3f452a',h:'#59604c',H:'#7c836b',f:'#6e705e',F:'#8e907c',v:'#45473a',

@@ -1,7 +1,7 @@
 /* Piksel: sprzęt cz. 1 – bimbrownia, wyrzutnie, słoje, samowar, armata, meblościanka, Rubin, piła.
    Siatka: 36 pikseli = pole (72 jednostki gry), ziemia w wierszu 0, w górę ujemne y, wróg nadchodzi z prawej. */
 (()=>{
-const X1=window.PX;   // goły PX to funkcja gry z ui.js (const), rejestr jest na window.PX
+const X1=window.PIX;   // rejestr pikseli (PX to funkcja gry)
 const {layer:L,rect,ell,line,poly,stamp}=X1;
 const S=(...f)=>p=>f.forEach(g=>g(p));
 const R=Math.round;

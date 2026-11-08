@@ -3,7 +3,7 @@
    Rozmiary z gry (skale w drawEnemyRaw / nPalac), przeliczone: 1 piksel = 2,5 jednostki. */
 (()=>{
 const L=(...fs)=>PIX.layer(p=>fs.forEach(f=>f(p))), N=(...fs)=>PIX.layer(p=>fs.forEach(f=>f(p)),false);
-const {rect,ell,line,poly,stamp,text}=PX;
+const {rect,ell,line,poly,stamp,text}=PIX;
 const pt=(x,y,c)=>p=>p(Math.round(x),Math.round(y),c);
 const fr=(k,st,n=4)=>st.walk||st.eat?PIX.frame(st,cycleOf(k,st).P,n):-1;
 // cieniowanie bryły 16-bit: jasno z lewej-góry, ciemno z prawej-dołu, na przejściu szachownica

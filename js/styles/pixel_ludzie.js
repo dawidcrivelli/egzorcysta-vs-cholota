@@ -3,8 +3,8 @@
    głowa 14×13 od wiersza 0, tułów 14×12 od wiersza 13, nogi od HIP. Kolory spoza PAL: lokalna paleta LP
    (litera → '#hex' albo para do ditheringu w szachownicę). */
 (()=>{
-if(!window.PX)return;
-const {limb,line,poly,rect,ell,WALK,IDLE,HIP,LEG_END}=PX;
+if(!window.PIX)return;
+const {limb,line,poly,rect,ell,WALK,IDLE,HIP,LEG_END}=PIX;
 
 const LP={
  m:'#5b6d86',M:'#3d4a5e',a:['#5b6d86','#3d4a5e'],      // mundur milicji
