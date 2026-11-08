@@ -17,7 +17,20 @@ function limb(a,b,w1,w2,c,far,noOut){
  Pth(nx>0?[p1,p2,b,a]:[a,b,p3,p4]);ctx.fillStyle=sh;ctx.fill();
  if(!noOut){Pth([p1,p2,p3,p4]);ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.lineJoin='round';ctx.stroke();}
 }
-function jnt(p,r,c,far,out){ctx.beginPath();ctx.arc(p[0],p[1],r,0,7);ctx.fillStyle=far?tint(c,0.8):c;ctx.fill();if(out){ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.stroke();}}
+/* kończyna jako jedna bryła przez punkty P o szerokościach W: najpierw kontur całości, potem wypełnienie,
+   więc stawy nie mają szwów ani guzów, a końce są zaokrąglone */
+function chain(P,W,c,far){
+ const col=far?tint(c,0.8):c,sh=tint(c,far?0.6:0.72),shapes=[];
+ for(let i=0;i<P.length;i++){
+  shapes.push(()=>ctx.arc(P[i][0],P[i][1],W[i]/2,0,7));
+  if(i){const a=P[i-1],b=P[i],dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L,r1=W[i-1]/2,r2=W[i]/2;
+   shapes.push(()=>{ctx.moveTo(a[0]+nx*r1,a[1]+ny*r1);ctx.lineTo(b[0]+nx*r2,b[1]+ny*r2);ctx.lineTo(b[0]-nx*r2,b[1]-ny*r2);ctx.lineTo(a[0]-nx*r1,a[1]-ny*r1);ctx.closePath();});}
+ }
+ ctx.beginPath();for(const s of shapes){s();ctx.closePath();}ctx.strokeStyle=OL;ctx.lineWidth=OLW*2;ctx.lineJoin='round';ctx.stroke();
+ ctx.fillStyle=col;for(const s of shapes){ctx.beginPath();s();ctx.fill();}   // osobno: przeciwne kierunki ścieżek nie robią dziur
+ for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i],dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L,r1=W[i-1]/2,r2=W[i]/2;
+  Pth(nx>0?[[a[0]+nx*r1,a[1]+ny*r1],[b[0]+nx*r2,b[1]+ny*r2],b,a]:[a,b,[b[0]-nx*r2,b[1]-ny*r2],[a[0]-nx*r1,a[1]-ny*r1]]);ctx.fillStyle=sh;ctx.fill();}
+}
 
 /* ---- szkielet ---- */
 const RG={W:2.3,HS:0.8,head:2.35,hand:1.85,foot:1.55};
@@ -32,8 +45,7 @@ function solve(pose){
 }
 function wrapLines(a,b,w,c){const dx=b[0]-a[0],dy=b[1]-a[1],Ln=Math.hypot(dx,dy)||1,nx=-dy/Ln,ny=dx/Ln,ux=dx/Ln,uy=dy/Ln;for(const t of [0.18,0.42,0.66,0.9]){const p=lp(a,b,t);ln(p[0]+nx*w/2-ux*2,p[1]+ny*w/2-uy*2,p[0]-nx*w/2+ux*2,p[1]-ny*w/2+uy*2,c,1.8);}}
 function drawLeg(L,o,far){
- jnt(L.kn,8,o.pants,far,true);
- limb(L.hp,L.kn,18,14.5,o.pants,far);limb(L.kn,L.an,14,11.6,o.pants,far);jnt(L.kn,6.4,o.pants,far,false);
+ chain([L.hp,L.kn,L.an],[18,14.5,11.6],o.pants,far);
  if(o.wrap){wrapLines(L.hp,L.kn,16,o.wrap);wrapLines(L.kn,L.an,12,o.wrap);}
  if(o.legStripe){ln(lp(L.hp,L.kn,0.1)[0]+2,lp(L.hp,L.kn,0.1)[1],L.an[0]+1.6,L.an[1]-2,far?tint(o.legStripe,0.8):o.legStripe,2);}
  if(o.bootH){const top=lp(L.kn,L.an,1-o.bootH);limb(top,L.an,15,13,o.boot,far);if(o.felt)limb(top,lp(top,L.an,0.22),16.6,16.2,o.felt,far);}
@@ -44,8 +56,7 @@ function drawLeg(L,o,far){
  OLW=pw;ctx.restore();
 }
 function drawArm(A,o,far,hold){
- jnt(A.el,6,o.sleeve,far,true);
- limb(A.sh,A.el,14,11.6,o.sleeve,far);limb(A.el,A.wr,11.6,9.8,o.sleeve,far);jnt(A.el,5.2,o.sleeve,far,false);
+ chain([A.sh,A.el,A.wr],[14,11.6,9.8],o.sleeve,far);
  if(o.cuff)limb(lp(A.el,A.wr,0.78),A.wr,9.6,9.6,o.cuff,far);
  if(o.wrap){wrapLines(A.sh,A.el,13,o.wrap);wrapLines(A.el,A.wr,10.5,o.wrap);}
  const d=[A.wr[0]-A.el[0],A.wr[1]-A.el[1]],ang=Math.atan2(d[1],d[0])-Math.PI/2,pw=OLW;
@@ -99,8 +110,9 @@ function drawFigure(o,pose,t){
  drawLeg(J.legs[1],o,true);
  drawLeg(J.legs[0],o,false);
  drawTorso(J,o,t);
+ if(o.beard)drawArm(J.arms[0],o,false,o.holdNear);   // długa broda zakrywa bark
  drawHead(J,o,t);
- drawArm(J.arms[0],o,false,o.holdNear);
+ if(!o.beard)drawArm(J.arms[0],o,false,o.holdNear);
  if(o.front)o.front(J,t);
  ctx.restore();
  return J;
@@ -152,7 +164,7 @@ function dziadBarrel(J){const x=J.H[0]+31,y=(J.H[1]+J.sh[1])/2-6;
 function dziadHose(J){const x=J.H[0]+31,y=(J.H[1]+J.sh[1])/2-6-29,A=J.arms[0],w=A.wr,mx=(x+w[0])/2,my=Math.max(y,w[1])+14;
  ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(mx+4,my,w[0],w[1]);sk(OL,4.4);ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(mx+4,my,w[0],w[1]);sk('#3a3a3a',2.6);
  ctx.beginPath();ctx.moveTo(J.sh[0]+6,J.sh[1]-1);ctx.lineTo(x-12,y+34);sk(OL,3.4);ctx.beginPath();ctx.moveTo(J.sh[0]+6,J.sh[1]-1);ctx.lineTo(x-12,y+34);sk('#6a4a2a',2);}
-CHR.dziad={back(J,t){dziadBarrel(J);},front(J,t){dziadHose(J);const c=(t%2.8)/2.8;if(c<0.36||c>0.75)return;const q=(c-0.36)/0.39,A=J.arms[0],d=[A.wr[0]-A.el[0],A.wr[1]-A.el[1]],n=Math.hypot(d[0],d[1])||1,bx=A.wr[0]+d[0]/n*34,by=A.wr[1]+d[1]/n*34;ctx.fillStyle='rgba(245,215,110,'+(1-q)+')';for(let i=0;i<8;i++){const an=-0.7+i*0.18,r=6+q*44;ctx.beginPath();ctx.ellipse(bx-Math.cos(an)*r,by+Math.sin(an)*r+q*q*26,1.8,2.6,0,0,7);ctx.fill();}},skin:'#d8a07a',pants:'#3c3a34',coat:'#4a5140',sleeve:'#4a5140',shoe:'#1c1c1a',boot:'#1c1c1a',bootH:0.62,felt:'#9a948a',skirt:6,brow:'#d8d4ca',browW:1.8,
+CHR.dziad={beard:true,back(J,t){dziadBarrel(J);},front(J,t){dziadHose(J);const c=(t%2.8)/2.8;if(c<0.36||c>0.75)return;const q=(c-0.36)/0.39,A=J.arms[0],d=[A.wr[0]-A.el[0],A.wr[1]-A.el[1]],n=Math.hypot(d[0],d[1])||1,bx=A.wr[0]+d[0]/n*34,by=A.wr[1]+d[1]/n*34;ctx.fillStyle='rgba(245,215,110,'+(1-q)+')';for(let i=0;i<8;i++){const an=-0.7+i*0.18,r=6+q*44;ctx.beginPath();ctx.ellipse(bx-Math.cos(an)*r,by+Math.sin(an)*r+q*q*26,1.8,2.6,0,0,7);ctx.fill();}},skin:'#d8a07a',pants:'#3c3a34',coat:'#4a5140',sleeve:'#4a5140',shoe:'#1c1c1a',boot:'#1c1c1a',bootH:0.62,felt:'#9a948a',skirt:6,brow:'#d8d4ca',browW:1.8,
  holdNear:{fn:holdKropidlo},holdFar:{fn:holdBottle},
  torsoFx(){for(let y=-28;y<0;y+=7)ln(-10,y,10,y+0.6,'#2c3226',0.9);ln(-1,-34,-2.5,0,'#2c3226',0.6);
   ctx.fillStyle='#6a5a3a';ctx.fillRect(1.5,-21,5,5.5);
