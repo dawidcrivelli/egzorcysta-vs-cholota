@@ -2,7 +2,7 @@
    Jednostki jak DRAW w grze: 72 = pole, ziemia y=0, chołota nadchodzi z prawej. d = stan (null = ikona). */
 (()=>{
 if(!window.ODN)return;
-const D=ODN.D;
+const D=ODN.D,PI_=Math.PI;
 const R=(x,y,w,h,r)=>()=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r||0);};
 const E=(x,y,rx,ry,a)=>()=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,a||0,0,7);};
 const P=pts=>()=>Pth(pts);
@@ -41,12 +41,6 @@ D.bimbrownia=(d,t)=>{
  for(let i=0;i<5;i++){const x=-36+i*4,h=6+4*Math.sin(t*9+i*1.7)+2*Math.sin(t*14+i);Pth([[x-3,0],[x+Math.sin(t*6+i),-h],[x+3,0]]);ctx.fillStyle='#ff6a12';ctx.fill();Pth([[x-1.6,0],[x,-h*0.6],[x+1.6,0]]);ctx.fillStyle='#ffd25a';ctx.fill();}
  ctx.restore();ctx.beginPath();ctx.moveTo(-38,0);ctx.lineTo(-38,-10);ctx.quadraticCurveTo(-29,-19,-20,-10);ctx.lineTo(-20,0);ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.stroke();
  ell(-29,-2,12*fl+4,4,'rgba(255,160,60,.25)');
- // kot śpi na ciepłym piecu
- const br=Math.sin(t*2)*0.4;ctx.save();ctx.translate(-14,-31);
- sh(()=>{ctx.beginPath();ctx.ellipse(0,-3.4-br*0.3,7.4,4+br*0.4,0,PI_,0);ctx.lineTo(7.4,0);ctx.lineTo(-7.4,0);ctx.closePath();},'#e08a3a',3);
- sh(E(-7,-3,3.6,3.2),'#e08a3a');Pth([[-9.6,-5],[-9.2,-8.6],[-7.4,-6]]);fs('#e08a3a',OLW*0.7);Pth([[-6.6,-6],[-5,-8.8],[-4.4,-5.6]]);fs('#e08a3a',OLW*0.7);
- ln(-8.8,-3.2,-7.6,-3,OL,0.7);ln(-6.6,-3.2,-5.4,-3,OL,0.7);ln(-2,-6.6,-1,-3.4,'#b0601e',1.1);ln(1.4,-7,2.2,-3.8,'#b0601e',1.1);
- txt('z',-12-Math.sin(t)*1.5,-10-(t*5%6),4,'rgba(255,255,255,.85)',700);ctx.restore();
  // kocioł
  const kx=-29,ky=-30;
  ctx.beginPath();ctx.moveTo(kx-15,ky);ctx.bezierCurveTo(kx-21,ky-12,kx-15,ky-30,kx,ky-31);ctx.bezierCurveTo(kx+15,ky-30,kx+21,ky-12,kx+15,ky);ctx.closePath();
@@ -67,6 +61,12 @@ D.bimbrownia=(d,t)=>{
  ctx.save();barrel();ctx.clip();for(let x=bx0+4;x<bx1;x+=5)ln(x,by0,x,by1,'rgba(40,20,5,.45)',0.6);ctx.restore();barrel();ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.stroke();
  for(const y of [by0+5,-25,by1-5]){ln(bx0-0.6,y,bx1+0.6,y,OL,3.2);ln(bx0-0.6,y,bx1+0.6,y,'#5a5a5a',1.8);}
  ell((bx0+bx1)/2,by0,(bx1-bx0)/2-1.4,2.4,'#23323a');ctx.strokeStyle='rgba(200,230,240,.5)';ctx.lineWidth=0.6;ctx.beginPath();ctx.ellipse((bx0+bx1)/2+Math.sin(t)*2,by0,5,0.9,0,0,7);ctx.stroke();
+ // kot śpi na beczce
+ const br=Math.sin(t*2)*0.4;ctx.save();ctx.translate(23,-50);
+ sh(()=>{ctx.beginPath();ctx.ellipse(0,-3.4-br*0.3,7.4,4+br*0.4,0,PI_,0);ctx.lineTo(7.4,0);ctx.lineTo(-7.4,0);ctx.closePath();},'#e08a3a',3);
+ sh(E(-7,-3,3.6,3.2),'#e08a3a');Pth([[-9.6,-5],[-9.2,-8.6],[-7.4,-6]]);fs('#e08a3a',OLW*0.7);Pth([[-6.6,-6],[-5,-8.8],[-4.4,-5.6]]);fs('#e08a3a',OLW*0.7);
+ ln(-8.8,-3.2,-7.6,-3,OL,0.7);ln(-6.6,-3.2,-5.4,-3,OL,0.7);ln(-2,-6.6,-1,-3.4,'#b0601e',1.1);ln(1.4,-7,2.2,-3.8,'#b0601e',1.1);
+ txt('z',-12-Math.sin(t)*1.5,-10-(t*5%6),4,'rgba(255,255,255,.85)',700);ctx.restore();
  // napis kredą i kranik
  txt('XXX',21,-32,7,'#f4ead0');
  sh(P([[bx1-1,-14],[bx1+6,-14.6],[bx1+6.4,-11],[bx1-1,-10.6]]),'#c46a32');
@@ -80,7 +80,6 @@ D.bimbrownia=(d,t)=>{
  puff(kx,ky-40,t,3,0.5,'rgba(240,240,240,A)');
  if(d&&d.t<1.2)ell(jx,-9,13,13,'rgba(255,230,120,'+(0.3+0.25*Math.sin(t*15)).toFixed(3)+')');
 };
-const PI_=Math.PI;
 
 /* ---- Wyrzutnia gumofilców: proca z dętki rowerowej wbita w ziemię, sterta śmierdzących gumiaków ---- */
 D.gumofilce=(d,t)=>{
@@ -279,8 +278,8 @@ D.armata=(d,t)=>{
 /* ---- Meblościanka: segment z kryształami, serwetka, jeleń na rykowisku, kolekcja puszek po piwie ---- */
 D.szafa=(d,t)=>{
  const hp=d&&d.max?d.hp/d.max:1;
- shadow(0,40);
- ctx.save();if(hp<0.33)ctx.rotate(-0.05);
+ shadow(0,36);
+ ctx.save();ctx.scale(0.86,0.86);if(hp<0.33)ctx.rotate(-0.05);
  const W1=-34,W2=34,TOP=-80;
  sh(R(W1,TOP,W2-W1,TOP*-1,1.4),'#8a5530',W2-16);
  ctx.save();R(W1,TOP,W2-W1,-TOP,1.4)();ctx.clip();for(let y=TOP+4;y<0;y+=6)ln(W1,y,W2,y+1.6,'rgba(60,30,10,.18)',1);ctx.restore();

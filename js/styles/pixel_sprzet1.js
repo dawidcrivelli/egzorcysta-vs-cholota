@@ -1,7 +1,8 @@
 /* Piksel: sprzęt cz. 1 – bimbrownia, wyrzutnie, słoje, samowar, armata, meblościanka, Rubin, piła.
    Siatka: 36 pikseli = pole (72 jednostki gry), ziemia w wierszu 0, w górę ujemne y, wróg nadchodzi z prawej. */
 (()=>{
-const {layer:L,rect,ell,line,poly,stamp}=PX;
+const X1=window.PX;   // goły PX to funkcja gry z ui.js (const), rejestr jest na window.PX
+const {layer:L,rect,ell,line,poly,stamp}=X1;
 const S=(...f)=>p=>f.forEach(g=>g(p));
 const R=Math.round;
 // cień na ziemi: dwa wiersze pod przedmiotem
@@ -19,7 +20,7 @@ const BOOT=["WWWW..","GGGG..","kkkk..","kkkk..","kkkk..","kkkkkk","kkkkkk","gggg
 // kryształowy kieliszek do meblościanki
 const GLASS=["WGW","GWG",".W.","WWW"];
 
-PX.D.bimbrownia=(d,t)=>{
+PIX.D.bimbrownia=(d,t)=>{
  shadow(22,1);
  // kocioł miedziany (dół zasłania piec)
  L(S(ell(-10,-15,7,6,'#c8703a'),p=>{for(let y=-21;y<=-9;y++)for(let x=-5;x<=-3;x++)p(x,y,'#8a3c16');},rect(-14,-18,1,4,'#f6b888'),rect(-13,-19,1,1,'#f6b888')));
@@ -43,7 +44,7 @@ PX.D.bimbrownia=(d,t)=>{
   L(S(rect(19,-14,1,3,'#fff6c0'),rect(18,-13,3,1,'#fff6c0')),false);}
 };
 
-PX.D.gumofilce=(d,t)=>{
+PIX.D.gumofilce=(d,t)=>{
  const a=armA(d,t),pull=clamp((0.38-a)/1.58,0,1),loaded=a<-1.0;
  shadow(19,-2);
  L(stamp(BOOT,-19,-8));L(stamp(BOOT,-13,-8));                 // zapas butów
@@ -55,7 +56,7 @@ PX.D.gumofilce=(d,t)=>{
  if(loaded)L(stamp(BOOT,px-3,py-8));
 };
 
-PX.D.pralka=(d,t)=>{
+PIX.D.pralka=(d,t)=>{
  const kick=d&&d.kick>0,j=kick?R(Math.sin(t*60)):0,lid=kick?-R(3*d.kick/0.25):0;
  shadow(18,-1);
  // skrzynka z małymi słoikami
@@ -71,7 +72,7 @@ PX.D.pralka=(d,t)=>{
  if(kick)for(let i=0;i<3;i++)L(rect(x0+4+i*5,-33+lid-((t*20+i)%3|0),1,1,'rgba(200,230,170,.9)'),false);   // chlup solanki
 };
 
-PX.D.resztki=(d,t)=>{
+PIX.D.resztki=(d,t)=>{
  const a=armA(d,t),loaded=a<-1.0;
  shadow(20,-1);
  // garnek z resztkami
@@ -89,7 +90,7 @@ PX.D.resztki=(d,t)=>{
  L(rect(5,-15,3,3,'#555'));
 };
 
-PX.D.woda=(d,t)=>{
+PIX.D.woda=(d,t)=>{
  const a=armA(d,t),loaded=a<-1.0;
  shadow(20,-1);
  // przydrożny krzyż i wiadro święconej
@@ -107,7 +108,7 @@ PX.D.woda=(d,t)=>{
  else if(a>0)for(let i=0;i<5;i++){const q=((t*3+i/5)%1);L(rect(R(tip[0]+2+q*10+i),R(tip[1]-2+q*q*8-i),1,1,'rgba(168,212,255,'+(1-q).toFixed(2)+')'),false);}
 };
 
-PX.D.samowar=(d,t)=>{
+PIX.D.samowar=(d,t)=>{
  const open=d?d.kick>0:false;
  shadow(15);
  L(S(rect(-13,-2,27,2,'#8a6420'),rect(-11,-2,23,1,'#c9962e')));
@@ -131,7 +132,7 @@ PX.D.samowar=(d,t)=>{
   for(let i=0;i<4;i++){const q=((t*2.2+i/4)%1);puff(R(18+q*20),R(-12-q*6),1+q*1.6,'rgba(245,248,255,'+(0.6*(1-q)*k+0.2).toFixed(2)+')');}}
 };
 
-PX.D.armata=(d,t)=>{
+PIX.D.armata=(d,t)=>{
  const rec=d&&d.kick>0?-R((d.kick/0.25)*3):0,o=[-1+rec,-12],A=-0.25;
  shadow(17);
  L(poly([[-15,-3],[5,-8],[6,-5],[-14,-1]],'#6e4a2a'));
@@ -148,7 +149,7 @@ PX.D.armata=(d,t)=>{
   for(let i=0;i<3;i++)puff(R(f[0]+3+i*3),R(f[1]-2-i*2),1.5+i,'rgba(200,200,200,.6)');}
 };
 
-PX.D.szafa=(d,t)=>{
+PIX.D.szafa=(d,t)=>{
  const hp=d&&d.max?d.hp/d.max:1;
  shadow(15);
  L(S(rect(-13,-32,26,31,'#8a5530'),rect(8,-32,5,31,'#5e3a1e'),rect(-13,-32,1,31,'#a86a3e')));
@@ -166,7 +167,7 @@ PX.D.szafa=(d,t)=>{
  if(hp<0.33)L(S(rect(1,-30,4,6,'#1a1a22'),line(12,-30,6,-26,'#1a0c04'),line(6,-26,8,-20,'#1a0c04'),line(8,-20,4,-15,'#1a0c04')),false);
 };
 
-PX.D.rubin=(d,t)=>{
+PIX.D.rubin=(d,t)=>{
  const hurt=d&&d.hp<d.max*0.5;
  shadow(15);
  L(S(line(-11,-6,-12,-1,'#3a2414'),line(9,-6,10,-1,'#3a2414')));
@@ -185,7 +186,7 @@ PX.D.rubin=(d,t)=>{
  if(hurt){L(S(line(-7,-23,-3,-17,'#ffffff'),line(-3,-17,-6,-12,'#ffffff'),line(-3,-17,3,-16,'#ffffff')),false);smoke(-2,-30,t,'rgba(120,120,120,',1.3,8);}
 };
 
-PX.D.pila=(d,t)=>{
+PIX.D.pila=(d,t)=>{
  const rev=d&&d.rev,jx=rev?R(Math.sin(t*90)*0.6):0,jy=rev?R(Math.cos(t*70)*0.6):0;
  shadow(16,3);
  L(S(line(-11,-1,-6,-12,'#7a5634',2),line(-2,-1,-6,-12,'#7a5634',2),line(9,-1,11,-12,'#7a5634',2),line(16,-1,11,-12,'#7a5634',2)));

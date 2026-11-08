@@ -2,6 +2,12 @@
    Rejestruje się w ODN (js/styles/odnowa.js): C = wygląd na szkielecie, P = pozy. Twarze w 3/4 jak w odnowa.js. */
 (()=>{
 const {C,P,walk,stand,eyes,F,ell,oell,dot,curve,rotp,claws}=ODN,PI=Math.PI;
+// pałka w przedłużeniu przedramienia (układ dłoni: +y wzdłuż przedramienia)
+function holdBaton(){ctx.save();ctx.translate(0,4);ctx.rotate(0.45);Pth([[-1.4,-2],[1.4,-2],[1.2,19],[-1.2,19]]);fs('#ecebe4',OLW*0.8);ctx.fillStyle='#222';ctx.fillRect(-1.5,-2,3,4.6);ctx.fillStyle='rgba(0,0,0,.15)';ctx.fillRect(0.2,3,0.9,16);ctx.restore();}
+// kaszkiet trzymany za daszek, zawsze denkiem do góry
+function holdKaszkiet(far,ang){ctx.save();ctx.translate(0,5);ctx.rotate(-ang);ctx.translate(-1,3);
+ Pth([[-6,-1],[5.6,-1.6],[6.4,1.6],[-6.6,2.2]]);fs(far?'#2c2c30':'#38383e',OLW*0.8);ctx.beginPath();ctx.ellipse(0,-1.4,6,2.6,0,PI,0);fs('#2c2c30',OLW*0.8);
+ Pth([[-6.6,2.2],[-10,3.4],[-5,3]]);fs('#1c1c20',OLW*0.7);ctx.restore();}
 const sw9=t=>Math.max(0,Math.sin(t*9));
 // wspólny wzór pozy: chód/stanie/gryzienie, potem ręce per postać
 function base(st,amp,lean){const t=st.t||0,sp=16*(st.sp||0.22),idle=!st.walk&&!st.eat;
@@ -12,7 +18,7 @@ function crack(pts,w){ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(const 
 /* ---------- Milicjant: krępy, czapka z orzełkiem, wąs, pałka, „Dowód osobisty!” ---------- */
 C.milicjant={R:18,leg:[14.5,14.5],legW:[11,9.6,8.2],arm:[13.5,13],armW:[9.8,8.4,7.4],hipX:[-3.5,4],neckW:10.5,
  T:{h:29,sw:12.5,hw:10.5,belly:4,sk:6},skin:'#e2b08a',pants:'#4a586b',coat:'#5a6a80',sleeve:'#5a6a80',shoe:'#151515',boot:'#161616',
- holdNear:{fn:holdPalka,behind:true},
+ holdNear:{fn:holdBaton},
  torsoFx(T){const c='#5a6a80';
   Pth([[-6.4,-29],[-3,-29],[-3,-6],[-6.4,-6]]);fs(tint(c,0.9),OLW*0.5);for(const y of [-25,-19,-13])dot(-4.7,y,0.9,'#d4b04a');
   for(const [x0,x1] of [[-14,-8.6],[1,8.6]]){Pth([[x0,-24],[x1,-24.4],[x1,-17],[x0,-16.6]]);fs(tint(c,0.88),OLW*0.5);Pth([[x0-0.4,-24.6],[x1+0.4,-25],[x1+0.4,-22],[x0-0.4,-21.6]]);fs(tint(c,0.8),OLW*0.5);}
@@ -42,8 +48,8 @@ C.milicjant={R:18,leg:[14.5,14.5],legW:[11,9.6,8.2],arm:[13.5,13],armW:[9.8,8.4,
 };
 P.milicjant=st=>{const t=st.t||0,p=base(st,0.44,0.05),s=sw9(t);
  if(st.eat)p.arms[0]={sh:0.3+1.9*s,el:0.9-0.7*s};
- else if(st.talk){p.arms[0]={sh:0.6,el:1.6};p.arms[1]={sh:1.45+0.05*Math.sin(t*3),el:0.08};}
- else p.arms[0]={sh:0.25+0.3*Math.sin((p.ph||t)+PI),el:1.35};
+ else if(st.talk){p.arms[0]={sh:0.35,el:0.5};p.arms[1]={sh:1.5+0.05*Math.sin(t*3),el:0.06};}
+ else p.arms[0]={sh:0.3+0.3*Math.sin((p.ph||t)+PI),el:0.45};
  return p;};
 
 /* ---------- Wampir: smukły, peleryna z wysokim kołnierzem, wdowi szpic, kły ---------- */
@@ -83,7 +89,7 @@ C.wampir={R:17,leg:[16.5,16],legW:[9.6,8.2,7],arm:[15,14],armW:[8.4,7.2,6.2],hip
 };
 P.wampir=st=>{const t=st.t||0,p=base(st,0.36,0.14);
  if(st.eat){p.lean=0.3;p.arms=[{sh:1.1+0.3*Math.sin(t*10),el:0.5},{sh:1.0+0.3*Math.sin(t*10+1.5),el:0.6}];}
- else if(st.talk){p.arms[0]={sh:2.05,el:1.35};p.tilt=-0.08;}
+ else if(st.talk){p.arms[0]={sh:1.75+0.1*Math.sin(t*4),el:0.25};p.tilt=-0.08;}
  else p.arms[0]={sh:1.15+0.1*Math.sin(t*2.4),el:0.55};
  p.arms[1]={sh:0.8,el:0.7};return p;};
 
@@ -111,9 +117,9 @@ C.mumia={R:17,leg:[15.5,15],legW:[10.6,9,8],arm:[14.5,14],armW:[9,7.8,7],hipX:[-
  face(R,t){const g=0.75+0.25*Math.sin(t*6);
   eyes(R,{rx:0.13,ry:0.14,white:'rgb(255,'+Math.round(200+30*g)+',90)',glow:'rgba(255,220,80,'+g+')',pupil:'#7a3a00',pr:0.04,dy:-0.02});
   // pas bandaża przez dalsze oko: widać tylko jedno
-  Pth([[-R*1.05,-R*0.36],[-R*0.32,-R*0.02],[-R*0.36,R*0.14],[-R*1.05,-R*0.18]]);fs('#e2d8bc',OLW*0.6);ln(-R*0.95,-R*0.24,-R*0.4,R*0.02,BAND,R*0.04);
+  Pth([[-R*0.88,-R*0.42],[-R*0.32,-R*0.04],[-R*0.36,R*0.12],[-R*0.9,-R*0.2]]);fs('#e2d8bc',OLW*0.6);ln(-R*0.84,-R*0.3,-R*0.4,R*0.02,BAND,R*0.04);
   ln(-R*0.62,R*0.56,-R*0.2,R*0.54,'#3a2a14',R*0.06);},
- hat(R,t){const f=Math.sin(t*3)*R*0.12;Pth([[R*0.4,-R*0.9],[R*0.62,-R*0.8],[R*1.2+f,-R*1.1],[R*1.1+f,-R*1.24]]);fs('#e4dcc4',OLW*0.7);}
+ hat(R,t){const f=Math.sin(t*3)*R*0.1;Pth([[R*0.62,-R*0.62],[R*0.78,-R*0.5],[R*1.25+f,-R*0.62+f],[R*1.18+f,-R*0.78+f]]);fs('#e4dcc4',OLW*0.7);}
 };
 P.mumia=st=>{const t=st.t||0,sp=16*(st.sp||0.13)*0.9,ph=t*sp,idle=!st.walk&&!st.eat;
  const p={ph,lean:0.1,tilt:0.04*Math.sin(ph),legs:idle?[{th:0.12,kn:0.05},{th:-0.1,kn:0.05}]:[0,PI].map(o=>({th:0.28*Math.sin(ph+o),kn:0.08+0.3*Math.pow(Math.max(0,Math.sin(ph+o+1.85)),1.4)})),
@@ -164,7 +170,7 @@ P.lunatyk=st=>{const t=st.t||0,p=base(st,0.3,-0.05);p.tilt=-0.14+0.04*Math.sin(t
 /* ---------- Lenin: łysina, rudawa bródka w szpic, kamizelka, kaszkiet w dłoni, wskazuje drogę ---------- */
 const LEN={R:18,leg:[14.5,14.5],legW:[10.6,9.2,8],arm:[13.5,13],armW:[9.4,8.2,7.2],hipX:[-3.5,4],neckW:9.5,
  T:{h:29,sw:11.5,hw:10.5,belly:2,sk:9},skin:'#e4b494',pants:'#26262c',coat:'#2c2c34',sleeve:'#2c2c34',cuff:'#e8e4da',shoe:'#111',
- holdFar:{fn:holdCap},
+ holdFar:{fn:holdKaszkiet},
  torsoFx(T){const c=this.coat,v=this.vest||'#3e3e48',sh=this.shirt||'#ece8de';
   Pth([[-10,-29],[0,-29],[-2,-6],[-9,-4]]);fs(v,0);for(const y of [-22,-17,-12])dot(-4.6,y,0.6,tint(v,0.6));
   Pth([[-7.4,-29.4],[-2.6,-29.4],[-4.6,-23]]);fs(sh,0);
@@ -180,9 +186,9 @@ const LEN={R:18,leg:[14.5,14.5],legW:[10.6,9.2,8],arm:[13.5,13],armW:[9.4,8.2,7.
   curve([-R*0.88,-R*0.34],[-R*0.68,-R*0.46],[-R*0.46,-R*0.32],hair,R*0.07);curve([-R*0.26,-R*0.32],[-R*0.04,-R*0.46],[R*0.16,-R*0.36],hair,R*0.07);
   oell(-R*0.6,R*0.17,R*0.17,R*0.15,tint(this.skin,0.92),OLW*0.8);
   // bródka w szpic, wąsy, usta
-  Pth([[-R*0.78,R*0.5],[-R*0.5,R*0.66],[-R*0.2,R*0.62],[R*0.04,R*0.46],[R*0.06,R*0.72],[-R*0.24,R*1.02],[-R*0.48,R*1.26],[-R*0.58,R*1.0],[-R*0.82,R*0.76]]);fs(hair,OLW*0.8);
+  Pth([[-R*0.74,R*0.62],[-R*0.5,R*0.74],[-R*0.22,R*0.7],[-R*0.02,R*0.6],[-R*0.04,R*0.8],[-R*0.26,R*1.04],[-R*0.5,R*1.3],[-R*0.6,R*1.02],[-R*0.78,R*0.8]]);fs(hair,OLW*0.8);
   ctx.strokeStyle=tint(hair,0.7);ctx.lineWidth=R*0.03;for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(-R*(0.62-i*0.16),R*0.72);ctx.lineTo(-R*(0.5-i*0.04),R*(1.06-i*0.06));ctx.stroke();}
-  ctx.beginPath();ctx.ellipse(-R*0.38,R*0.56,R*0.14,R*0.03+R*0.12*m,0,0,7);fs(dark?'#4a2a0a':'#4a1414',OLW*0.5);
+  if(m>0.1){ctx.beginPath();ctx.ellipse(-R*0.38,R*0.6,R*0.13,R*0.12*m,0,0,7);fs(dark?'#4a2a0a':'#4a1414',OLW*0.5);}
   Pth([[-R*0.82,R*0.46],[-R*0.56,R*0.34],[-R*0.36,R*0.4],[-R*0.14,R*0.34],[R*0.06,R*0.46],[-R*0.16,R*0.5],[-R*0.38,R*0.46],[-R*0.6,R*0.52]]);fs(hair,OLW*0.6);
   // rudawy wianuszek włosów z tyłu
   Pth([[R*0.4,-R*0.56],[R*0.88,-R*0.46],[R*0.96,R*0.06],[R*0.8,R*0.3],[R*0.64,-R*0.1],[R*0.48,-R*0.3]]);fs(hair,OLW*0.6);}
@@ -190,7 +196,6 @@ const LEN={R:18,leg:[14.5,14.5],legW:[10.6,9.2,8],arm:[13.5,13],armW:[9.4,8.2,7.
 C.lenin=Object.assign({},LEN);
 const leninPose=(st,boss)=>{const t=st.t||0,p=base(st,boss?0.3:0.36,boss?0.1:0.12),s=sw9(t);
  if(boss||st.talk){p.arms[0]={sh:2.12+0.04*Math.sin(t*2),el:0.05};p.tilt=-0.12;}
- else p.arms[0]={sh:0.4,el:1.95};   // dłoń za klapą kamizelki
  if(st.eat&&!boss)p.arms[0]={sh:0.4+1.7*s,el:0.8-0.6*s};
  p.arms[1]={sh:0.15+(p.arms[1].sh||0)*0.4,el:0.75};
  if(boss){p.lean=st.eat?0.2:0.1;p.legs.forEach(l=>{l.kn*=0.7;});}

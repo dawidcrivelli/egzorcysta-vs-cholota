@@ -1,7 +1,7 @@
 /* Piksel 16-bit: przodownik, carski sołdat, okupant, sekretarz i Zdzichu. Ta sama siatka co pixel.js
    (40 wierszy = wzrost, ziemia w wierszu 40, twarzą w lewo), głowa 14×13 od x=-8, tułów od wiersza 13. */
 (()=>{
-if(!window.PX)return;
+const PX=window.PX;if(!PX||!PIX.E)return;   // gra ma własne globalne PX (const), więc tylko przez window
 const {layer,limb,fist,line,rect,ell,poly,WALK,IDLE}=PX;
 // paleta dodatkowa (litery spoza PAL gry) i dithering w szachownicę
 const LP={o:'#626a40',O:'#7f8852',q:'#3f452a',h:'#59604c',H:'#7c836b',f:'#6e705e',F:'#8e907c',v:'#45473a',
@@ -15,15 +15,15 @@ const L=(c)=>LP[c]||c;
 const GL={U:["101","101","101","101","111"],R:["110","101","110","101","101"],A:["010","101","111","101","101"],H:["101","101","111","101","101"],L:["100","100","100","100","111"],T:["111","010","010","010","010"],'!':["1","1","1","0","1"]};
 const say=(s,x,y,c)=>p=>{for(const ch of s){const g=GL[ch];g.forEach((r,j)=>[...r].forEach((v,i)=>v==='1'&&p(x+i,y+j,c)));x+=g[0].length+1;}};
 // noga z cholewą: od wiersza `boot` w dół kolor buta; stopa 5 px w lewo
-function leg(hx,fx,lift,o,far){return p=>{const end=PX.LEG_END-lift;
- for(let y=PX.HIP;y<=end;y++){const x=Math.round(hx+(fx-hx)*(y-PX.HIP)/(end-PX.HIP)),b=o.boot&&y>=end-o.boot;
+function leg(hx,fx,lift,o,far){return p=>{const end=PIX.LEG_END-lift;
+ for(let y=PIX.HIP;y<=end;y++){const x=Math.round(hx+(fx-hx)*(y-PIX.HIP)/(end-PIX.HIP)),b=o.boot&&y>=end-o.boot;
   const c0=b?o.shoe:o.pants,c1=b?(o.shoe2||o.shoe):o.pantsS;
   p(x,y,far?c1:c0);p(x+1,y,far?c1:(o.stripe&&!b?o.stripe:c0));p(x+2,y,c1);
   if(b&&o.felt&&y===end-o.boot){p(x,y,o.felt);p(x+1,y,o.felt);p(x+2,y,o.felt);}}
  for(let y=end+1;y<=end+2;y++)for(let x=fx-2;x<=fx+2;x++)p(x,y,far?(o.shoe2||o.shoe):o.shoe);};}
 // wspólny rytm: e = klatka ataku 0..3 albo -1, w = poza chodu, by = podskok, sw = wymach rąk
 function rig(k,st){
- const t=st.t||0,P=cycleOf(k,st).P,f=PX.frame(st,P),e=st.eat?f:-1;
+ const t=st.t||0,P=cycleOf(k,st).P,f=PIX.frame(st,P),e=st.eat?f:-1;
  const w=st.walk&&!st.eat?WALK[f]:IDLE,breath=!st.walk&&!st.eat&&Math.sin(t*2.4)>0.4?-1:0;
  return{t,e,w,by:w.bob+breath,sw:st.walk&&!st.eat?[1,0,-1,0][f]:0,lean:e>=0?[0,-1,-2,-1][e]:0,
   open:(st.talk&&Math.sin(t*14)>0)||e===2};
@@ -43,7 +43,7 @@ function kilof(hx,hy,ang){ // trzonek od dłoni w kierunku ang, żelazo prostopa
  const nx=-dy,ny=dx;layer(poly([[ex+nx*7,ey+ny*7],[ex+dx*1.5,ey+dy*1.5],[ex-nx*7,ey-ny*7],[ex-nx*6-dx,ey-ny*6-dy],[ex-dx,ey-dy],[ex+nx*6-dx,ey+ny*6-dy]],'#8a8e94'));
  layer(line(ex+nx*5,ey+ny*5-0,ex+nx*2,ey+ny*2,'#c4c8cc',1),false);
 }
-PX.E.przodownik=st=>{const r=rig('przodownik',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean;
+PIX.E.przodownik=st=>{const r=rig('przodownik',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean;
  legs(r,PRZ_L);
  arm(1,15+by,2-r.sw,24+by,'g','g','s');
  layer(st2(PRZ_T,tx,13+by));
@@ -59,7 +59,7 @@ PX.E.przodownik=st=>{const r=rig('przodownik',st),by=r.by,hx=-8+r.lean,tx=-7+r.l
 };
 
 /* ===================== CARSKI SOŁDAT: szynel do kolan, papacha, wąsiska, karabin z bagnetem ===================== */
-const CAR_H=["...JJJJJJJ....","..JNJNJNJNJ...","..JJJJJJJJJn..","..RRRRRRRRRn..","..SSSSSSSSs4..","..SKWSSSSSs44.",
+const CAR_H=["...NJNJNJ.....","..JNJNJNJNJ...","..NmJNJNJNJn..","..JNJNJNJNJn..","..SSSSSSSSs4..","..SKWSSSSSs44.",
  "..SKWSSSSs4s4.","SSSSSSSSSSsS4.","nnnnnSSSSSs4s.","nn.nnnSSSs44..","...SSSSSSs4...","...SSSSSs4....","....ssss......"];
 const CAR_T=["....SSoo......","..oooRooooO...",".ooooOoooo11..",".oyooOoooo11..","oooooOooooo111","ooyooOoooooo11",
  "oooooOooooo111","JJJJJJJJJJJJJJ","JJmJJJJJJJJJJJ","oooooOooooo111",".ooooOoooooo11",".ooooOooooo11.",".oooooOoooo11.",".oooooOooooo11","..ooooOooooo11","..oooooOoooo1.","..ooooooooo11.","..oo.ooo.oo.1."];
@@ -69,11 +69,11 @@ function rifle(hx,hy,ang,bay){const dx=Math.cos(ang),dy=Math.sin(ang);
  layer(line(hx-dx*4,hy-dy*4,hx-dx*15,hy-dy*15,'#4a4a4e',1));           // lufa
  if(bay)layer(line(hx-dx*15,hy-dy*15,hx-dx*22,hy-dy*22,'#d8dde2',1));
 }
-PX.E.carski=st=>{const r=rig('carski',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean;
+PIX.E.carski=st=>{const r=rig('carski',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean;
  legs(r,CAR_L);
  const e=r.e,stab=e>=0?[0,2,-4,-2][e]:0;
  // karabin oburącz: przy chodzie na ukos w górę, przy gryzieniu pchnięcie bagnetem
- const ang=e>=0?0.05:-1.05,h=[e>=0?-6+stab:-3,e>=0?21+by:20+by];
+ const ang=e>=0?0.05:1.05,h=[e>=0?-6+stab:-3,e>=0?21+by:20+by];
  arm(1,15+by,h[0]+5,h[1]+(e>=0?0:2),'o','o','s');
  layer(st2(CAR_T,tx,13+by));
  layer(st2(CAR_H,hx,by));
@@ -91,10 +91,10 @@ const OK_HELM=["....hhhhhh....","..hhHHhhhhhv..",".hhHhhhhhhhvv.","hhhhhhhhhhhhv
 const OK_T=["....SSff......","..ffvffffffF..",".ffffffffff55.",".fvvfffvffff5.","fffvvfffffff55","fffffffffffff5",
  "ffffFffffff555","fffffffffffff5","kkkkkmkkkkkkkk","fvvvvffffffff5",".fvvvvfffff55.",".ffffffffff55.",".fffffffffff5.",".kkkkkkkkkkkk."];
 const OK_L={pants:L('f'),pantsS:L('v'),shoe:'#161616',boot:5,shoe2:'#0c0c0c'};
-PX.E.okupant=st=>{const r=rig('okupant',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean,e=r.e;
+PIX.E.okupant=st=>{const r=rig('okupant',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean,e=r.e;
  legs(r,OK_L);
  // karabin: przy chodzie oburącz przed sobą, przy gryzieniu cios kolbą z góry
- const butt=e>=0,ang=butt?[-2.0,-2.4,0.9,0.6][e]:-0.5,h=butt?[[-3,13],[-2,11],[-9,21],[-8,22]][e]:[-5,21];h[1]+=by;
+ const butt=e>=0,ang=butt?[0.3,0.5,-0.05,0.05][e]:0.25,h=butt?[[-4,20],[-2,19],[-10,21],[-8,21]][e]:[-5,21];h[1]+=by;
  arm(1,15+by,h[0]+4,h[1]+1,'f','f','s');
  layer(st2(OK_T,tx,13+by));
  layer(st2(OK_H,hx,by));
@@ -109,15 +109,15 @@ PX.E.okupant=st=>{const r=rig('okupant',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean,e=
 };
 
 /* ===================== SEKRETARZ PARTII: brzuch, okulary, zaczeska, megafon i papiery ===================== */
-const SEK_H=["...k.k.k.k....","...SSSSSSSs...","..SSSSSSSSs4..","..SSSSSSSGGG4.",".KKKKKSSSGGGG.",".KWKWKKSSGsGG.",
- "SSKKKKSSSGsSG.","sSSSSSSSSGGG4.",".SSSSSSSSSGs4.",".SSkkSSSSSs4..","..SSSSSSSs4...","...SSSSSSs4...","....sssss....."];
+const SEK_H=["..............","...SkkkkkSs...","..SSSSkkkSs4..","..SSSSSSSGGG4.",".KKSKKSSSGGGG.",".KiKKiKSSGsGG.",
+ "SKKSKKSSSGsSG.","sSSSSSSSSGGG4.",".SSSSSSSSSGs4.",".SSkkSSSSSs4..","..SSSSSSSs4...","...SSSSSSs4...","....sssss....."];
 const SEK_T=["....SSWcc.....","..ccWWWcccC...",".cccWRWccccc3.",".ccWWRWcRcccc3","cccWRRWcmccc33","ccccWRccccccc3",
  "cccccRcccccc33","Cccccccccccc33","Ccccccccccccc3","Ccccccccccccc3","CccccccCcccc33",".ccccccccccc33",".xxxxxxyxxxxx.",".ccccccccccc3."];
 const SEK_L={pants:L('c'),pantsS:L('x'),shoe:'#1a1a1a'};
 function megafon(hx,hy,talk,t){layer(st2(["......WWWW","..WWWWWWWW","RRWWWWWWWW","RRWWWWWWWW","..WWWWWWWW","......WWWW"].map(r=>[...r].reverse().join('')),hx-11,hy-3));
  layer(st2(["G","G","G","G"],hx-12,hy-2),false);
  if(talk){const q=Math.floor(t*6)%3;for(let i=0;i<=q;i++){const x=hx-15-i*3;layer(p=>{for(let y=-2-i;y<=2+i;y++)p(x-(Math.abs(y)<i?1:0),hy+y,'#fff6dc');},false);}}}
-PX.E.sekretarz=st=>{const r=rig('sekretarz',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean,e=r.e;
+PIX.E.sekretarz=st=>{const r=rig('sekretarz',st),by=r.by,hx=-8+r.lean,tx=-7+r.lean,e=r.e;
  legs(r,SEK_L);
  // dalsza ręka trzyma papiery uchwały
  const ph=[2-r.sw,22+by];arm(1,15+by,ph[0],ph[1],'c','c','s');layer(st2(["WWWW","WiiW","WWWW","WiiW","WWWW"],ph[0]-1,ph[1]-1));
@@ -139,7 +139,7 @@ const Z_T=["....SStt......","..tttRtttTT...",".tttRYRttTTT6.",".ttttRtttTTT6.","
  "ttttRtttttttt6","TTTTRTTTTTTTT6","ttttRYRttttt66","ttttRtttttttt6","NNNNNNmNNNNNN6","ttttttttttttt6",".tttttttttttt6",".tttttttttttt."];
 const Z_L={pants:'#3c3a34',pantsS:'#2a2924',shoe:'#1c1c1a',boot:5,felt:'#9a948a',shoe2:'#121210'};
 const BARREL=[".JJJJJJJJJ.","J000000000J","kkkkkkkkkkk","j0000000000","jjj0W0W0000","jjj00W00000","jjj0W0W0000","j0000000000","kkkkkkkkkkk","j0000000000","j0000000000","kkkkkkkkkkk",".J0000000J."];
-PX.H=t=>{const c=(t%2.8)/2.8,bob=Math.sin(t*2.2)>0.5?-1:0,by=bob;
+PIX.H=t=>{const c=(t%2.8)/2.8,bob=Math.sin(t*2.2)>0.5?-1:0,by=bob;
  // ręka z kropidłem: zamach do góry (0..0.3), szybki strzał (0.3..0.4), powrót
  const ph=c<0.3?0:c<0.4?1:c<0.75?2:3;
  const H=[[-4,8],[-14,12],[-13,17],[-9,20]][ph],ang=[-2.1,-0.35,0.2,0.7][ph];H[1]+=by;

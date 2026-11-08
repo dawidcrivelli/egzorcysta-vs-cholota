@@ -1,6 +1,6 @@
 /* Pixel art sprzętu, część 2: kombajn, relikwia, kabel, sklep mięsny, gnojówka, aparatura, flaszka, pług, łopata, Ursus.
    Siatka: 36 pikseli = pole (2 jednostki gry na piksel), ziemia w wierszu 0, w górę ujemne y; wrogowie idą z prawej. */
-(()=>{
+(()=>{const PX=window.PX;   // w grze jest globalna funkcja PX (ui.js), rejestr bierzemy z window
 const {layer,rect,ell,line,poly}=PX;
 const L=(...f)=>layer(p=>f.forEach(g=>g(p)));          // kształty jednej warstwy, z konturem
 const N=(...f)=>layer(p=>f.forEach(g=>g(p)),false);    // bez konturu: blaski, napisy, cienie
@@ -12,7 +12,7 @@ const C={wood:'#8a5a32',woodD:'#5e3a1e',woodL:'#b07a46',iron:'#9aa0a6',ironD:'#5
  red:'#d0342c',redD:'#8a1e18',redL:'#ee6a4a',cream:'#f4ecd0',green:'#3f8a3a',pink:'#e88a86',pinkL:'#f7c6bd',dirt:'#6a4a26',dirtD:'#4a3218'};
 /* font 3×5 na szyldy */
 const FONT3={A:'010101111101101',B:'110101110101110',E:'111100110100111',I:'111010010010111',M:'101111111101101',N:'110101101101101',
- O:'111101101101111',S:'111100111001111',U:'101101101101111',R:'110101110101101',Z:'111001010100111',X:'101101010101101',' ':'000000000000000'};
+ O:'111101101101111',S:'111100111001111',U:'101101101101111',R:'110101110101101',Z:'111001010100111',C:'111100100100111','3':'111001011001111','0':'111101101101111',X:'101101010101101',' ':'000000000000000'};
 const txt=(s,x,y,c)=>p=>{for(const ch of s){const g=FONT3[ch]||FONT3[' '];for(let i=0;i<15;i++)if(g[i]==='1')p(x+i%3,y+Math.floor(i/3),c);x+=4;}};
 const txtW=s=>s.length*4-1;
 // koło: opona, bieżnik obraca się z kątem a, felga z konturem, piasta
@@ -24,7 +24,7 @@ function wheel(cx,cy,r,a,rim,n){
 }
 function smoke(x,y,t,k,col){const n=3;N(p=>{for(let i=0;i<n;i++){const q=(t*k+i/n)%1,r=0.6+q*2.2,cx=x+q*3+Math.sin(t*3+i)*1,cy=y-q*9;ell(cx,cy,r,r,col||'rgba(110,110,110,'+(0.6*(1-q)).toFixed(2)+')')(p);}});}
 
-const D=PX.D;
+const D=PIX.D;
 
 /* Kombajn Bizon: czerwony, kierowca w kabinie, nagarniacz mieli */
 D.kombajn=(d,t)=>{const rev=d&&d.rev,j=rev?fr(t,14,2):0;
@@ -191,7 +191,7 @@ D.ursus=(d,t)=>{const mv=!!(d&&d.moving),b=mv?fr(t,12,2):0,ox=0,oy=-b;
  L(line(-1,-20+oy,-3,-26+oy,'#222'));L(rect(-6,-27+oy,5,1,'#333'));
  // maska z kratką i światłem
  L(rect(-2,-20+oy,20,9,C.red));
- N(rect(-2,-20+oy,18,1,C.redL),rect(-2,-12+oy,20,1,C.redD),txt('URSUS',-1,-18+oy,'#ffffff'));
+ N(rect(-2,-20+oy,18,1,C.redL),rect(-2,-12+oy,20,1,C.redD),txt('C330',3,-18+oy,'#ffffff'));
  L(rect(17,-19+oy,2,7,'#2a2a2a'));N(p=>{for(let i=0;i<3;i++)p(18,-18+i*2+oy,'#777');});
  L(rect(15,-17+oy,2,2,'#fff4c0'));
  L(rect(0,-12+oy,14,5,'#3a3a3a'));N(p=>{for(let i=0;i<4;i++)p(2+i*3,-10+oy,'#555');});

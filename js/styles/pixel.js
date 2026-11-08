@@ -122,10 +122,10 @@ function paint(x,y,px,ground,shadow){
 }
 const render=(x,y,h)=>paint(x,y,h/ROWS,GROUND,SHADOW_W);
 
-/* rejestr dla plików pixel_*.js. Ludzie i chołota: PX.E[k]=st=>{…} rysuje do siatki (40 wierszy = wzrost, ziemia w wierszu 40,
+/* rejestr dla plików pixel_*.js (globalnie window.PIX, bo PX to funkcja gry). Ludzie i chołota: PX.E[k]=st=>{…} rysuje do siatki (40 wierszy = wzrost, ziemia w wierszu 40,
    twarzą w lewo, x≈0 to środek; wolno wyjść poza 0..40 w górę do -64). PX.SH[k] = szerokości cienia (opcjonalnie).
    Sprzęt: PX.D[k]=(d,t)=>{…}, 36 pikseli = pole, ziemia w wierszu 0, w górę ujemne y. Zdzichu: PX.H=t=>{…} jak chołota. */
-const PX=window.PX={E:{},D:{},H:null,SH:{},PAL,DITH,OUT,ROWS,GROUND,HIP,LEG_END,WALK,IDLE,POSES,
+const PX=window.PIX={E:{},D:{},H:null,SH:{},PAL,DITH,OUT,ROWS,GROUND,HIP,LEG_END,WALK,IDLE,POSES,
  begin(){G=new Map();},layer,stamp,limb,leg,fist,text,textW,GLYPH,
  rect:(x,y,w,h,c)=>p=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)p(x+i,y+j,c);},
  ell:(cx,cy,rx,ry,c)=>p=>{for(let j=Math.floor(-ry);j<=Math.ceil(ry);j++)for(let i=Math.floor(-rx);i<=Math.ceil(rx);i++)if((i*i)/(rx*rx+0.01)+(j*j)/(ry*ry+0.01)<=1.05)p(Math.round(cx+i),Math.round(cy+j),c);},
