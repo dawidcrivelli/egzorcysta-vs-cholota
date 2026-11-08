@@ -8,11 +8,16 @@ const LOCAL=/^(localhost|127\.|\[::1\])/.test(location.hostname);
 const BOX={en:{w:1.8,h:1.5,ay:0.88},def:{w:1.6,h:1.5,ay:0.86}};
 const GAME_ROWS=2.7*BOX.en.h;   // w „skali z gry” rząd tak, żeby zmieścił się Pałac Kultury
 const SPEEDS=[[0,'⏸'],[0.25,'¼'],[0.5,'½'],[1,'1×'],[2,'2×']];
-const TABS=[['en','Chołota'],['def','Sprzęt']];
+const TABS=[['en','Chołota'],['def','Sprzęt'],['style','Style']];
+/* Próby stylów: każdy plik js/styles/<id>.js dopisuje się do STYLES i rysuje te postacie */
+const STYLE_ENEMIES=['trup','sasiad','urzednik','komunista'];
+const STYLE_FILES=['szkic','chibi','pixel','wycinanka','plakat','cien','glina','kreska'];
+const STYLE_STATES={idzie:{walk:true},gryzie:{eat:true},stoi:{},mówi:{walk:true,talk:true}};
+window.STYLES=[{id:'gra',name:'Obecna grafika',desc:'Tak jak teraz w grze, do porównania.',draw:(k,x,y,h,st)=>drawEnemyRaw(k,x,y,h,st)}];
 const UI=Object.assign({tab:'en',speed:1,bg:'trawa',box:false,frames:false,gameScale:false,q:'',st:{},big:null},JSON.parse(localStorage.getItem(STORE)||'{}'));
-// ustawienia z adresu, np. postacie.html?tab=def&frames=1&box=1&q=pila
+// ustawienia z adresu, np. postacie.html?tab=def&frames=1&box=1&q=pila&state=gryzie&speed=0&t=1.3
 for(const [k,v] of new URLSearchParams(location.search))UI[k]=v==='1'?true:v==='0'?false:k==='speed'?+v:v;
-const keep=()=>localStorage.setItem(STORE,JSON.stringify(UI));
+const keep=()=>localStorage.setItem(STORE,JSON.stringify({...UI,state:undefined,t:undefined}));   // state, t: tylko z adresu
 const $=s=>document.querySelector(s);
 let cards=[],last=0;
 
@@ -59,11 +64,23 @@ function defCard(k){
 const dziadCard={k:'dziad',unit:'en',name:'Zdzichu',desc:'Egzorcysta z beczką i wężem.',stats:'bohater',hr:0.88,states:{polewa:{}},
  raw:(x,y,h,st,t)=>drawHuman('dziad',x,y,h,{t}),cached:(x,y,h,st,t)=>drawHuman('dziad',x,y,h,{t}),cycle:()=>({P:2.8,n:8})};
 
+const styleCard=s=>({k:s.id,name:s.name,desc:s.desc,stats:'styl: '+s.id,states:STYLE_STATES,s});
+/* karta stylu: 4 postacie obok siebie; błąd w stylu pokazany na karcie, nie psuje reszty */
+function drawLineup(c,st,W,H){
+ const n=STYLE_ENEMIES.length,sw=W/n,h=UI.gameScale?H/GAME_ROWS*enemyHR('trup'):Math.min(H*0.58,sw*0.95),y=H*0.9;
+ BGS[UI.bg](W,H,h);
+ STYLE_ENEMIES.forEach((k,i)=>{const d=EN[k],x=sw*(i+0.5);
+  ctx.save();try{c.s.draw(k,x,y,h,{sp:d.sp,shield:d.shield||0,helm:0,hp:1,...st,t:T});}catch(e){c.err=e.message;}ctx.restore();
+  if(UI.box){const B=BOX.en;ctx.setLineDash([6,4]);ctx.strokeStyle='#ff3df2';ctx.lineWidth=1.5;ctx.strokeRect(x-B.w*h/2,y-B.ay*B.h*h,B.w*h,B.h*h);ctx.setLineDash([]);line(x-10,y,x+10,y,2.5,'#ff3df2');}
+  txt(k,x,H-6,11,700,'rgba(255,255,255,.8)','center',['rgba(0,0,0,.6)',3]);});
+ if(c.err)txt('błąd: '+c.err,8,H-24,12,700,'#ff6a5a','left',['#000',3]);
+}
 function drawCard(c){
  const cv=c.cv,dpr=Math.min(devicePixelRatio||1,2),W=cv.clientWidth,H=cv.clientHeight;
  if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(H*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);}
  ctx=c.g;DPR=dpr;S=1;ctx.setTransform(dpr,0,0,dpr,0,0);
  const st=c.states[c.state];
+ if(c.s){drawLineup(c,st,W,H);return;}
  if(st.demo){DM=c.dm||null;demoBox(c.k,0,0,W,H);c.dm=DM;return;}   // każda karta ma własny pokaz
  const B=BOX[c.unit],cyc=UI.frames&&c.cycle(st),H1=H-(cyc?H*STRIP:0);
  const u=UI.gameScale?H1/GAME_ROWS*c.hr:Math.min(W/B.w,H1/B.h)*FIT;
@@ -82,14 +99,14 @@ function drawCard(c){
 
 function build(){
  const grid=$('#grid');grid.innerHTML='';
- const list=UI.tab==='en'?ALM_EN.concat('buraczek').map(enemyCard):[dziadCard].concat(ALM_DEF.map(defCard));
+ const list=UI.tab==='style'?STYLES.map(styleCard):UI.tab==='en'?ALM_EN.concat('buraczek').map(enemyCard):[dziadCard].concat(ALM_DEF.map(defCard));
  const q=UI.q.toLowerCase();
  cards=list.filter(c=>!q||(c.name+' '+c.k).toLowerCase().includes(q));
  const io=new IntersectionObserver(es=>es.forEach(e=>{e.target.card.vis=e.isIntersecting;}));
  for(const c of cards){
   const el=document.createElement('section');el.className='card'+(UI.big===c.k?' big':'');
   el.innerHTML=`<canvas title="2× klik: powiększ"></canvas><div class="info"><h2>${c.name}<small>${c.k}</small></h2><div class="stats">${c.stats}</div><p>${c.desc||''}</p></div><div class="states"></div>`;
-  c.cv=el.querySelector('canvas');c.g=c.cv.getContext('2d');c.state=c.states[UI.st[c.k]]?UI.st[c.k]:Object.keys(c.states)[0];
+  c.cv=el.querySelector('canvas');c.g=c.cv.getContext('2d');c.state=[UI.state,UI.st[c.k]].find(s=>c.states[s])||Object.keys(c.states)[0];
   const box=el.querySelector('.states');
   for(const s in c.states){const b=document.createElement('button');b.textContent=s;b.classList.toggle('on',s===c.state);
    b.onclick=()=>{c.state=UI.st[c.k]=s;box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));keep();};box.append(b);}
@@ -118,6 +135,7 @@ function frame(now){
  requestAnimationFrame(frame);
 }
 function main(){
+ if(UI.t)T=+UI.t;   // ?t=1.3: start w danej chwili animacji (np. do zrzutów przy speed=0)
  toolbar();build();
  if(UI.scrollY){scrollTo(0,UI.scrollY);delete UI.scrollY;keep();}
  requestAnimationFrame(frame);
@@ -133,7 +151,8 @@ function watch(files){
 
 fetch('index.html').then(r=>r.text()).then(html=>{
  const srcs=[...html.matchAll(/<script src="([^"]+)"/g)].map(m=>m[1]).filter(s=>!SKIP.test(s));
- srcs.forEach((s,i)=>{const el=document.createElement('script');el.src=s;el.async=false;if(i===srcs.length-1)el.onload=main;document.body.append(el);});
+ srcs.push(...STYLE_FILES.map(f=>`js/styles/${f}.js`));   // brakujący plik stylu nie blokuje strony (onerror)
+ srcs.forEach((s,i)=>{const el=document.createElement('script');el.src=s;el.async=false;if(i===srcs.length-1)el.onload=el.onerror=main;document.body.append(el);});
  if(LOCAL)watch(['postacie.html','css/postacie.css','js/postacie.js',...srcs]);
 });
 })();
