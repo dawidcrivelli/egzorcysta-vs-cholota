@@ -36,6 +36,7 @@
 <script src="js/almanach.js"></script>
 <script src="js/dzwiek_syntezowany_bez.js"></script>
 <script src="js/petla_i_wejscie.js"></script>
-<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');</script>
+<!-- offline tylko na serwerze; lokalnie cache psułby podgląd zmian -->
+<script>if('serviceWorker' in navigator&&!/^(localhost|127\.)/.test(location.hostname))navigator.serviceWorker.register('sw.js');</script>
 </body>
 </html>
