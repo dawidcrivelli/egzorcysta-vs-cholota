@@ -11,7 +11,7 @@ const SPEEDS=[[0,'⏸'],[0.25,'¼'],[0.5,'½'],[1,'1×'],[2,'2×']];
 const TABS=[['en','Chołota'],['def','Sprzęt'],['style','Style']];
 /* Próby stylów: każdy plik js/styles/<id>.js dopisuje się do STYLES i rysuje te postacie */
 const STYLE_ENEMIES=['trup','sasiad','urzednik','komunista'];
-const STYLE_FILES=['odnowa','odnowa_ludzie','odnowa_ludzie2','odnowa_stwory','odnowa_sprzet1','odnowa_sprzet2','szkic','chibi','pixel','wycinanka','plakat','cien','glina','kreska','pixel_ludzie','pixel_ludzie2','pixel_stwory','pixel_sprzet1','pixel_sprzet2'];
+const STYLE_FILES=['odnowa','odnowa_ludzie','odnowa_ludzie2','odnowa_stwory','odnowa_sprzet1','odnowa_sprzet2','odnowa_lekka','szkic','chibi','pixel','wycinanka','plakat','cien','glina','kreska','pixel_ludzie','pixel_ludzie2','pixel_stwory','pixel_sprzet1','pixel_sprzet2'];
 const STYLE_STATES={idzie:{walk:true},gryzie:{eat:true},stoi:{},mówi:{walk:true,talk:true},'bez transparentu':{walk:true,shield:0}};
 /* styl może rysować też całą obsadę: s.en / s.def / s.hero = lista kluczy albo funkcja k=>bool,
    s.draw(k,x,y,h,st) chołota, s.drawDef(k,x,by,sz,d,t) sprzęt, s.drawHero(x,y,h,t) Zdzichu; czego nie ma, rysuje gra */
