@@ -223,7 +223,7 @@ C.sasiad={R:19.5,leg:[13,12.5],legW:[11,9.4,8],arm:[13,12.5],armW:[9.4,8.2,7.2],
   // nos-kartofel
   oell(-R*0.66,R*0.15,R*0.25,R*0.21,'#d9665a',OLW*0.9);ell(-R*0.74,R*0.08,R*0.07,R*0.045,'rgba(255,255,255,.55)');
   // uśmieszek, sumiaste wąsy, zarost
-  curve([-R*0.62,R*0.58],[-R*0.36,R*0.7],[-R*0.06,R*0.52],'#4a1a14',R*0.05);
+  grim(R,st.talk?0.3+0.4*Math.abs(Math.sin(t*9)):0,-0.32,0.2,0.62);
   Pth([[-R*1.0,R*0.48],[-R*0.82,R*0.32],[-R*0.5,R*0.32],[-R*0.12,R*0.34],[R*0.08,R*0.5],[-R*0.12,R*0.46],[-R*0.42,R*0.46],[-R*0.72,R*0.5]]);fs('#4a3020',OLW*0.7);
   ln(-R*0.7,R*0.38,-R*0.5,R*0.44,'#6e4c32',R*0.03);ln(-R*0.3,R*0.38,-R*0.1,R*0.44,'#6e4c32',R*0.03);
   ctx.fillStyle='rgba(50,30,20,.5)';for(const [x,y] of [[-0.5,0.78],[-0.3,0.82],[-0.1,0.74],[0.1,0.66],[-0.2,0.66],[0.3,0.5],[0.3,0.68],[-0.62,0.72]])ctx.fillRect(x*R,y*R,R*0.03,R*0.03);
@@ -287,9 +287,8 @@ C.komunista={R:18.5,leg:[14.5,14.5],legW:[11,9.6,8.2],arm:[14,13],armW:[10,8.6,7
   Pth([[-R*0.9,-R*0.36],[-R*0.44,-R*0.2],[-R*0.46,-R*0.1],[-R*0.86,-R*0.24]]);fs('#2a1a10',OLW*0.5);
   Pth([[-R*0.3,-R*0.18],[R*0.14,-R*0.34],[R*0.16,-R*0.22],[-R*0.28,-R*0.08]]);fs('#2a1a10',OLW*0.5);
   ctx.beginPath();ctx.moveTo(-R*0.44,-R*0.0);ctx.quadraticCurveTo(-R*0.84,R*0.24,-R*0.62,R*0.3);ctx.lineTo(-R*0.38,R*0.26);fs(tint('#e8b892',0.92),OLW*0.8);
-  // krzyczące usta z zębami
-  const my=R*0.56;ctx.beginPath();ctx.moveTo(-R*0.66,my-R*0.08);ctx.lineTo(-R*0.08,my-R*0.1);ctx.quadraticCurveTo(-R*0.12,my+R*0.36*m,-R*0.36,my+R*0.34*m);ctx.quadraticCurveTo(-R*0.62,my+R*0.3*m,-R*0.66,my-R*0.08);fs('#3a0d0d',OLW*0.8);
-  ctx.fillStyle='#f2ead6';ctx.fillRect(-R*0.6,my-R*0.08,R*0.48,R*0.08);ell(-R*0.36,my+R*0.22*m,R*0.14,R*0.06*m,'#b03a34');
+  // krzyczące usta: kąciki w dół
+  grim(R,m,-0.36,0.27,0.56);
   Pth([[-R*0.82,R*0.4],[-R*0.5,R*0.3],[-R*0.12,R*0.32],[R*0.04,R*0.44],[-R*0.14,R*0.44],[-R*0.48,R*0.4],[-R*0.76,R*0.48]]);fs('#2a1a10',OLW*0.6);
   ctx.fillStyle='rgba(40,30,20,.18)';ctx.beginPath();ctx.ellipse(-R*0.2,R*0.78,R*0.5,R*0.16,0,0,7);ctx.fill();},
  hat(R){ // maciejówka z gwiazdą
@@ -299,9 +298,20 @@ C.komunista={R:18.5,leg:[14.5,14.5],legW:[11,9.6,8.2],arm:[14,13],armW:[10,8.6,7
   const sx=-R*0.42,sy=-R*0.95,s=R*0.2,pts=[];for(let i=0;i<10;i++){const a=-PI/2+i*PI/5,r=i%2?s*0.42:s;pts.push([sx+Math.cos(a)*r*0.8,sy+Math.sin(a)*r]);}Pth(pts);fs('#d42a1e',OLW*0.6);}
 };
 
+/* złe usta: kąciki w dół. m=0 zaciśnięte w podkówkę, m>0 krzyk z zębami na górze i na dole (nigdy uśmiech) */
+function grim(R,m,cx=-0.36,w=0.24,y=0.56){
+ const X=v=>v*R,top=()=>{ctx.moveTo(X(cx-w),X(y+0.07));ctx.quadraticCurveTo(X(cx),X(y-0.09),X(cx+w),X(y+0.07));};
+ if(m<0.12){ctx.beginPath();top();sk('#4a1a14',R*0.055);return;}
+ const b=y+0.07+0.3*m,path=()=>{ctx.beginPath();top();ctx.lineTo(X(cx+w*0.75),X(b));ctx.quadraticCurveTo(X(cx),X(b+0.04),X(cx-w*0.75),X(b));ctx.closePath();};
+ path();fs('#3a0d0d',OLW*0.8);
+ ctx.save();path();ctx.clip();ctx.fillStyle='#f2ead6';
+ ctx.beginPath();top();ctx.lineTo(X(cx+w),X(y+0.13));ctx.quadraticCurveTo(X(cx),X(y-0.03),X(cx-w),X(y+0.13));ctx.fill();
+ ctx.fillRect(X(cx-w),X(b-0.06),X(2*w),X(0.08));
+ ell(X(cx),X((y+b)/2+0.03),X(w*0.45),X(0.05*m),'#b03a34');ctx.restore();
+}
 /* rejestr dla dalszych plików odnowa_*.js: C = postaci na szkielecie, P = ich pozy (st→poza),
    X = chołota bez szkieletu (st,t) w jednostkach 100 = wzrost, D = sprzęt (d,t) w jednostkach 72 = pole jak DRAW w grze, H = Zdzichu */
-const ODN=window.ODN={C,P:{},X:{},D:{},H:null,figure,pose,walk,stand,eyes,F,ell,oell,dot,curve,rotp,claws,holdGasior,holdBanner};
+const ODN=window.ODN={grim,C,P:{},X:{},D:{},H:null,figure,pose,walk,stand,eyes,F,ell,oell,dot,curve,rotp,claws,holdGasior,holdBanner};
 STYLES.push({id:'odnowa',name:'Odnowa: nowe figury 3/4',desc:'Kontur i cieniowanie jak w grze, ale nowe sylwetki i proporcje (duża głowa, krępe ciało) oraz twarz w 3/4 zgodna z ciałem.',
  en:k=>!!(C[k]||ODN.X[k]),def:k=>!!ODN.D[k],hero:()=>!!ODN.H,
  draw(k,x,y,h,st){

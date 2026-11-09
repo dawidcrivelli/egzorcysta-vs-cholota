@@ -6,9 +6,7 @@ const {eyes,ell,oell,dot,curve,rotp,walk,stand}=ODN,PI=Math.PI;
 const star=(x,y,s,c)=>{const p=[];for(let i=0;i<10;i++){const a=-PI/2+i*PI/5,r=i%2?s*0.42:s;p.push([x+Math.cos(a)*r,y+Math.sin(a)*r]);}Pth(p);fs(c,OLW*0.5);};
 const sw9=t=>Math.max(0,Math.sin(t*9));
 // usta: otwarte (m 0..1) z górnymi zębami
-function mouth(R,m,col){const my=R*0.55;
- ctx.beginPath();ctx.moveTo(-R*0.6,my-R*0.06);ctx.quadraticCurveTo(-R*0.36,my-R*0.12,-R*0.12,my-R*0.07);ctx.quadraticCurveTo(-R*0.16,my+R*0.3*m,-R*0.36,my+R*0.28*m);ctx.quadraticCurveTo(-R*0.58,my+R*0.26*m,-R*0.6,my-R*0.06);fs(col||'#3a0d0d',OLW*0.8);
- if(m>0.15){ctx.fillStyle='#f2ead6';ctx.fillRect(-R*0.54,my-R*0.08,R*0.38,R*0.07);ell(-R*0.36,my+R*0.18*m,R*0.12,R*0.05*m,'#b03a34');}}
+function mouth(R,m){ODN.grim(R,m);}
 function nose(R,col,big){oell(-R*0.6,R*0.17,R*(big||0.17),R*(big?big*0.85:0.15),col,OLW*0.8);ell(-R*0.66,R*0.11,R*0.05,R*0.03,'rgba(255,255,255,.45)');}
 const brows=(R,c,ang)=>{const a=ang||0;Pth([[-R*0.88,-R*0.32-a*R],[-R*0.46,-R*0.36+a*R],[-R*0.44,-R*0.26+a*R],[-R*0.86,-R*0.22-a*R]]);fs(c,OLW*0.4);Pth([[-R*0.3,-R*0.32+a*R],[R*0.14,-R*0.4-a*R],[R*0.16,-R*0.3-a*R],[-R*0.28,-R*0.22+a*R]]);fs(c,OLW*0.4);};
 
@@ -27,7 +25,7 @@ ODN.C.przodownik={R:18,leg:[14,14],legW:[12,10.4,8.8],arm:[13.5,13],armW:[11.4,1
   ell(8,-4,2.6,1.6,'rgba(30,20,10,.35)');ell(-10,-2,1.6,1.2,'rgba(30,20,10,.3)');
   ctx.fillStyle='#4a3420';ctx.fillRect(-20,-3,40,2.6);},
  torsoOver(T){Pth([[-T.sw+1,-T.h+3],[-T.sw+7,-T.h+0.6],[-T.sw+6,-T.h+5],[-T.sw+1,-T.h+6]]);fs('#7a7a74',OLW*0.5);},
- face(R,t,st){const m=st.talk?0.4+0.5*Math.abs(Math.sin(t*9)):0.35;
+ face(R,t,st){const m=st.talk?0.4+0.5*Math.abs(Math.sin(t*9)):0;
   eyes(R,{rx:0.14,ry:0.18});brows(R,'#3a2410',-0.02);
   nose(R,tint('#e0aa82',0.9),0.2);
   mouth(R,m);
@@ -105,7 +103,7 @@ ODN.C.okupant={R:16.5,leg:[16.5,16],legW:[9.6,8.4,7.4],arm:[14.5,14],armW:[9,8,7
  face(R,t,st){const m=st.talk?0.4+0.5*Math.abs(Math.sin(t*9)):0.1,h=CS.helm>0;
   eyes(R,{rx:0.13,ry:0.15,lid:h?0.7:1,dy:0.04});brows(R,h?'#5a4a2a':'#c9a36a',0.06);
   nose(R,'#e0a684',0.15);ln(-R*0.66,R*0.3,-R*0.54,R*0.36,tint('#e2b590',0.6),R*0.03);
-  mouth(R,m);if(m<0.2)ln(-R*0.6,R*0.5,-R*0.14,R*0.52,'#7a3a2a',R*0.05);
+  mouth(R,m);
   ell(-R*0.36,R*0.84,R*0.28,R*0.1,'rgba(40,25,15,.2)');
   if(!h){ // jasne, krótko ostrzyżone włosy i siniak po hełmie
    ctx.beginPath();ctx.moveTo(R*0.9,-R*0.3);ctx.quadraticCurveTo(R*0.9,-R*1.12,-R*0.1,-R*1.04);ctx.quadraticCurveTo(-R*0.86,-R*0.98,-R*0.92,-R*0.5);ctx.quadraticCurveTo(-R*0.3,-R*0.72,R*0.4,-R*0.56);ctx.quadraticCurveTo(R*0.6,-R*0.4,R*0.9,-R*0.3);fs('#d8b46a',OLW*0.8);
@@ -143,7 +141,7 @@ ODN.C.sekretarz={R:19,leg:[12,12],legW:[11,9.4,8],arm:[12,11.5],armW:[9.4,8.4,7.
   ell(-12,-6,2,1.4,'rgba(255,255,255,.12)');},
  headBack(R){oell(-R*0.3,R*0.94,R*0.56,R*0.26,tint('#e6b896',0.9),OLW);oell(-R*0.26,R*1.12,R*0.44,R*0.18,tint('#e6b896',0.86),OLW*0.8);},
  faceFx(R){ell(-R*0.25,-R*0.62,R*0.3,R*0.13,'rgba(255,255,255,.45)',-0.25);ell(-R*0.78,R*0.32,R*0.2,R*0.12,'rgba(220,80,60,.3)');},
- face(R,t,st){const m=st.talk?0.45+0.55*Math.abs(Math.sin(t*11)):0.35;
+ face(R,t,st){const m=st.talk?0.45+0.55*Math.abs(Math.sin(t*11)):0;
   eyes(R,{rx:0.11,ry:0.14,lid:0.75});
   ctx.fillStyle='rgba(200,230,255,.22)';ctx.strokeStyle=OL;ctx.lineWidth=R*0.06;
   for(const [k,s] of [['far',0.72],['near',1]]){ctx.beginPath();ctx.rect(ODN.F[k][0]*R-R*0.26*s,ODN.F[k][1]*R-R*0.2,R*0.52*s,R*0.36);ctx.fill();ctx.stroke();}

@@ -20,29 +20,22 @@ const BOOT=["WWWW..","GGGG..","kkkk..","kkkk..","kkkk..","kkkkkk","kkkkkk","gggg
 // kryształowy kieliszek do meblościanki
 const GLASS=["WGW","GWG",".W.","WWW"];
 
-PIX.D.bimbrownia=(d,t)=>{
- shadow(22,1);
- // kocioł miedziany (dół zasłania piec)
- L(S(ell(-10,-15,7,6,'#c8703a'),p=>{for(let y=-21;y<=-9;y++)for(let x=-5;x<=-3;x++)p(x,y,'#8a3c16');},rect(-14,-18,1,4,'#f6b888'),rect(-13,-19,1,1,'#f6b888')));
- L(rect(-11,-23,3,2,'#8a4a22'));
- // fajka do beczki
- L(S(line(-10,-23,-8,-26,'#b8622e'),line(-8,-26,-2,-27,'#b8622e'),line(-2,-27,3,-25,'#b8622e'),line(3,-25,5,-20,'#b8622e')));
- // piec z cegły i palenisko
- L(S(rect(-18,-11,16,11,'#8d4630'),p=>{for(const y of [-8,-5,-2])for(let x=-18;x<-2;x++)p(x,y,'#5e2a1a');for(let y=-11;y<0;y++)p(R(-12+((y+11)/3|0)%2*4),y,'#5e2a1a');},rect(-18,-11,16,1,'#a85a40')));
- L(S(rect(-14,-6,7,6,'#160a05'),rect(-13,-7,5,1,'#160a05')));
- L(p=>{for(let i=0;i<4;i++){const h=2+R(1.5+1.5*Math.sin(t*9+i*1.7));for(let j=0;j<h;j++)p(-13+i*2,-1-j,j>h-2?'#ff6a12':'#ffd25a');}},false);
- // beczka z obręczami
- L(S(rect(0,-19,10,18,'#9a6e40'),rect(7,-19,3,18,'#6a4a28'),rect(1,-19,1,18,'#c4935e'),rect(0,-17,10,1,'#4a4a4a'),rect(0,-10,10,1,'#4a4a4a'),rect(0,-3,10,1,'#4a4a4a'),rect(1,-20,8,1,'#23323a')));
- L(rect(10,-12,3,1,'#b8622e'));
- // słój: poziom samogonu rośnie, kapie z kranika
- const lvl=-2-R(5*((t*0.04)%1));
- L(S(ell(15,-4,4,4,'rgba(200,232,222,.75)'),rect(14,-9,3,1,'rgba(200,232,222,.75)'),p=>{for(let y=lvl;y<=-1;y++)for(let x=11;x<=19;x++)if((x-15)**2/17+(y+4)**2/17<=1)p(x,y,'#e8be50');},rect(12,-6,1,2,'rgba(255,255,255,.8)')));
- const dc=(t*1.4)%1;if(dc<0.7)L(rect(12,-11+R(dc/0.7*3),1,1,'#f0d070'),false);
- smoke(-10,-26,t);
- if(d&&d.t<1.2){const b=Math.sin(t*15)>0;   // właśnie wypędziła: błysk przy słoju
-  L(p=>{for(const [x,y] of [[9,-10],[21,-10],[15,-12],[9,1],[21,1],[15,-9]])p(x,y,b?'#fff0a0':'#ffd25a');},false);
-  L(S(rect(19,-14,1,3,'#fff6c0'),rect(18,-13,3,1,'#fff6c0')),false);}
+PIX.D.bimbrownia=(d,t)=>{   // uproszczona: piec, kocioł, rurka, gąsior
+ shadow(20,-1);
+ // piec z cegły i ogień
+ L(S(rect(-20,-12,16,12,'#a4512e'),rect(-20,-8,16,1,'#7c3a20'),rect(-20,-4,16,1,'#7c3a20'),rect(-16,-5,8,5,'#2a1208')));
+ L(p=>{for(let i=0;i<4;i++){const h=1+R(1.5+1.5*Math.sin(t*9+i*1.7));for(let j=0;j<h;j++)p(-15+i*2,-1-j,j===h-1?'#ff7a1a':'#ffd25a');}},false);
+ // kocioł: jeden kolor, odblask, cień z prawej
+ L(S(ell(-12,-19,8,7,'#c8703a'),p=>{for(let y=-25;y<=-13;y++)for(let x=-8;x<=-4;x++)if((x+12)**2/64+(y+19)**2/49<=1)p(x,y,'#9a4c22');},rect(-17,-22,1,3,'#f6c8a0'),rect(-13,-28,3,2,'#9a4c22')));
+ // rurka i gąsior
+ L(S(line(-12,-28,-6,-31,'#c8703a'),line(-6,-31,2,-30,'#c8703a'),line(2,-30,7,-25,'#c8703a'),line(7,-25,8,-14,'#c8703a')));
+ const lvl=-2-R(7*((t*0.04)%1));
+ L(S(ell(8,-6,6,6,'#cfe6e0'),rect(7,-14,3,3,'#cfe6e0'),p=>{for(let y=lvl;y<=-1;y++)for(let x=2;x<=14;x++)if((x-8)**2/37+(y+6)**2/37<=1)p(x,y,'#e8be50');},rect(4,-9,1,3,'#ffffff')));
+ const dc=(t*1.4)%1;if(dc<0.7)L(rect(8,-13+R(dc/0.7*2),1,1,'#f0d070'),false);
+ smoke(-12,-31,t);
+ if(d&&d.t<1.2)L(ell(8,-6,9,9,'rgba(255,230,120,'+(0.25+0.2*Math.sin(t*15)).toFixed(2)+')'),false);
 };
+
 
 PIX.D.gumofilce=(d,t)=>{
  const a=armA(d,t),pull=clamp((0.38-a)/1.58,0,1),loaded=a<-1.0;
@@ -108,29 +101,21 @@ PIX.D.woda=(d,t)=>{
  else if(a>0)for(let i=0;i<5;i++){const q=((t*3+i/5)%1);L(rect(R(tip[0]+2+q*10+i),R(tip[1]-2+q*q*8-i),1,1,'rgba(168,212,255,'+(1-q).toFixed(2)+')'),false);}
 };
 
-PIX.D.samowar=(d,t)=>{
+PIX.D.samowar=(d,t)=>{   // uproszczony: korpus, kranik, czajniczek
  const open=d?d.kick>0:false;
- shadow(15);
- L(S(rect(-13,-2,27,2,'#8a6420'),rect(-11,-2,23,1,'#c9962e')));
- L(S(poly([[-5,-3],[6,-3],[4,-8],[-3,-8]],'#b8862a'),rect(3,-8,2,5,'#7a5214')));
- const g=0.5+0.5*Math.sin(t*8)*Math.sin(t*5.1);
- L(p=>{for(const x of [-2,0,2])p(x,-5,g>0.5?'#ffb030':'#e0701c');},false);
- // korpus mosiężny z medalem
- L(S(ell(0,-17,10,9,'#d4a43a'),p=>{for(let y=-26;y<=-8;y++)for(let x=4;x<=10;x++)p(x,y,'#9a6e1e');},rect(-7,-22,2,9,'#ffe7a0'),rect(-6,-24,1,2,'#ffe7a0'),rect(-10,-19,21,1,'#7a5214'),
-  ell(0,-13,2,2,'#7a1a14'),rect(0,-14,1,2,'#e8c050')));
- for(const s of [-1,1])L(S(line(s*10,-21,s*13,-20,'#b8862a'),line(s*13,-20,s*12,-15,'#b8862a')));
- L(S(rect(-6,-27,13,2,'#d4a43a'),rect(-2,-29,5,2,'#8a6420')));
- // kranik: otwiera się przy strzale
- L(S(rect(9,-11,6,2,'#d4a43a'),rect(14,-10,1,2,'#d4a43a')));
- L(open?rect(12,-15,1,4,'#e8c050'):rect(10,-13,4,1,'#e8c050'));
- // czajniczek na górze
- L(S(ell(0,-32,5,3,'#f2efe6'),rect(-5,-31,11,1,'#2a4fa0'),rect(3,-34,2,1,'#d8d4ca')));
- L(S(line(5,-33,8,-36,'#f2efe6'),rect(-1,-36,3,1,'#ebe7dc'),rect(0,-37,1,1,'#2a4fa0')));
- smoke(8,-38,t,'rgba(240,240,240,',0.45,9);
- if(open){const k=d.kick/0.25;   // strumień wrzątku w prawo
-  L(p=>{for(let i=0;i<26;i++){const x=15+i,y=R(-9+i*i*0.014-Math.sin(i/26*Math.PI)*2);p(x,y,'#c8e6ff');if(i%3)p(x,y-1,'#ffffff');}},false);
-  for(let i=0;i<4;i++){const q=((t*2.2+i/4)%1);puff(R(18+q*20),R(-12-q*6),1+q*1.6,'rgba(245,248,255,'+(0.6*(1-q)*k+0.2).toFixed(2)+')');}}
+ shadow(13);
+ L(poly([[-7,0],[8,0],[5,-4],[-4,-4]],'#a8781e'));
+ L(S(ell(0,-15,9,10,'#d4a43a'),p=>{for(let y=-25;y<=-5;y++)for(let x=4;x<=9;x++)if(x*x/81+(y+15)**2/100<=1)p(x,y,'#a8781e');},rect(-6,-20,1,7,'#ffe7a0')));
+ L(S(rect(8,-9,6,2,'#d4a43a'),rect(13,-8,1,2,'#d4a43a')));
+ L(open?rect(11,-12,1,3,'#8a6420'):rect(10,-11,3,1,'#8a6420'));
+ L(rect(-5,-27,11,2,'#b8862a'));
+ L(S(ell(0,-31,5,3,'#f2efe6'),rect(-4,-30,9,1,'#2a4fa0'),line(5,-32,7,-35,'#f2efe6'),rect(0,-35,1,1,'#2a4fa0')));
+ smoke(7,-37,t,'rgba(240,240,240,',0.45,8);
+ if(open){const k=d.kick/0.25;
+  L(p=>{for(let i=0;i<24;i++){const x=14+i,y=R(-7+i*i*0.014-Math.sin(i/24*Math.PI)*2);p(x,y,'#c8e6ff');if(i%3)p(x,y-1,'#ffffff');}},false);
+  for(let i=0;i<3;i++){const q=((t*2.2+i/3)%1);puff(R(17+q*18),R(-10-q*6),1+q*1.6,'rgba(245,248,255,'+(0.6*(1-q)*k+0.2).toFixed(2)+')');}}
 };
+
 
 PIX.D.armata=(d,t)=>{
  const rec=d&&d.kick>0?-R((d.kick/0.25)*3):0,o=[-1+rec,-12],A=-0.25;

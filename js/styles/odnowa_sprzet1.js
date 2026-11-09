@@ -29,56 +29,28 @@ function gumiak(stink,t){
 function fly(x,y,t,i){const a=t*7+i*2.1,fx=x+Math.cos(a)*7,fy=y+Math.sin(a*1.3)*4;ell(fx,fy,1.1,1.1,'#111');ell(fx-0.8,fy-1.2,1.1,0.6,'rgba(220,240,255,.8)',-0.5);ell(fx+0.8,fy-1.2,1.1,0.6,'rgba(220,240,255,.8)',0.5);}
 
 /* ---- Bimbrownia: piec z cegły, miedziany kocioł z manometrem, wężownica w beczce, gąsior ---- */
-D.bimbrownia=(d,t)=>{
- shadow(0,50);
- // piec
- sh(R(-46,-26,34,26,3),'#a4512e',-20);
- ctx.save();R(-46,-26,34,26,3)();ctx.clip();ctx.strokeStyle='#5a2614';ctx.lineWidth=0.8;
- for(let r=0;r<4;r++){const y=-26+r*6.5;ln(-47,y,-11,y,'#5a2614',0.8);for(let x=-46+(r%2)*5;x<-12;x+=10)ln(x,y,x,y+6.5,'#5a2614',0.8);}ctx.restore();
- sh(R(-48,-30,38,5,2),'#7c3a20',-22);
+D.bimbrownia=(d,t)=>{   // uproszczona: piec, jeden kocioł, rurka, gąsior
+ shadow(-2,44);
  const fl=0.6+0.4*Math.sin(t*11)*Math.sin(t*7.3);
- ctx.save();ctx.beginPath();ctx.moveTo(-38,0);ctx.lineTo(-38,-10);ctx.quadraticCurveTo(-29,-19,-20,-10);ctx.lineTo(-20,0);ctx.closePath();ctx.fillStyle='#160a05';ctx.fill();ctx.clip();
- for(let i=0;i<5;i++){const x=-36+i*4,h=6+4*Math.sin(t*9+i*1.7)+2*Math.sin(t*14+i);Pth([[x-3,0],[x+Math.sin(t*6+i),-h],[x+3,0]]);ctx.fillStyle='#ff6a12';ctx.fill();Pth([[x-1.6,0],[x,-h*0.6],[x+1.6,0]]);ctx.fillStyle='#ffd25a';ctx.fill();}
- ctx.restore();ctx.beginPath();ctx.moveTo(-38,0);ctx.lineTo(-38,-10);ctx.quadraticCurveTo(-29,-19,-20,-10);ctx.lineTo(-20,0);ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.stroke();
- ell(-29,-2,12*fl+4,4,'rgba(255,160,60,.25)');
- // kocioł
- const kx=-29,ky=-30;
- ctx.beginPath();ctx.moveTo(kx-15,ky);ctx.bezierCurveTo(kx-21,ky-12,kx-15,ky-30,kx,ky-31);ctx.bezierCurveTo(kx+15,ky-30,kx+21,ky-12,kx+15,ky);ctx.closePath();
- ctx.fillStyle=copper(kx-19,kx+19);ctx.fill();ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.stroke();
- ctx.beginPath();ctx.moveTo(kx-18.6,ky-12);ctx.quadraticCurveTo(kx,ky-9,kx+18.6,ky-12);sk('#5a240e',1.6);
- for(let i=0;i<6;i++)ell(kx-15+i*6,ky-10.6+Math.abs(i-2.5)*0.4,0.8,0.8,'#7a3410');
- ell(kx-7,ky-20,1.8,5.4,'rgba(255,235,210,.55)',0.25);
- // manometr: igła drży, czasem w czerwonym
- const gx=kx+2,gy=ky-21;sh(E(gx,gy,5.2,5.2),'#f2ede0');ctx.beginPath();ctx.arc(gx,gy,4,PI_*0.9,PI_*1.25);sk('#3a8a3a',1.4);ctx.beginPath();ctx.arc(gx,gy,4,PI_*1.75,PI_*2.1);sk('#d02a20',1.4);
- const na=-2.2+1.9*(0.5+0.5*Math.sin(t*0.9))+0.08*Math.sin(t*40);ln(gx,gy,gx+Math.cos(na)*3.8,gy+Math.sin(na)*3.8,'#111',0.8);ell(gx,gy,0.8,0.8,'#111');
- sh(R(kx-3,ky-37,6,6,1),'#a85a26');
- // rura: wężownica do beczki
- bez([kx+1,ky-35],[kx+10,ky-50],[8,-66],[16,-56],'#c46a32',3.2);
- // beczka chłodząca
- const bx0=8,bx1=34,by0=-50,by1=0;
- const barrel=()=>{ctx.beginPath();ctx.moveTo(bx0+1.4,by1);ctx.quadraticCurveTo(bx0-2,(by0+by1)/2,bx0+1.4,by0);ctx.lineTo(bx1-1.4,by0);ctx.quadraticCurveTo(bx1+2,(by0+by1)/2,bx1-1.4,by1);ctx.closePath();};
- barrel();const g2=ctx.createLinearGradient(bx0,0,bx1,0);g2.addColorStop(0,'#5a3a1e');g2.addColorStop(0.35,'#a2744a');g2.addColorStop(1,'#4a2e16');ctx.fillStyle=g2;ctx.fill();
- ctx.save();barrel();ctx.clip();for(let x=bx0+4;x<bx1;x+=5)ln(x,by0,x,by1,'rgba(40,20,5,.45)',0.6);ctx.restore();barrel();ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.stroke();
- for(const y of [by0+5,-25,by1-5]){ln(bx0-0.6,y,bx1+0.6,y,OL,3.2);ln(bx0-0.6,y,bx1+0.6,y,'#5a5a5a',1.8);}
- ell((bx0+bx1)/2,by0,(bx1-bx0)/2-1.4,2.4,'#23323a');ctx.strokeStyle='rgba(200,230,240,.5)';ctx.lineWidth=0.6;ctx.beginPath();ctx.ellipse((bx0+bx1)/2+Math.sin(t)*2,by0,5,0.9,0,0,7);ctx.stroke();
- // kot śpi na beczce
- const br=Math.sin(t*2)*0.4;ctx.save();ctx.translate(23,-50);
- sh(()=>{ctx.beginPath();ctx.ellipse(0,-3.4-br*0.3,7.4,4+br*0.4,0,PI_,0);ctx.lineTo(7.4,0);ctx.lineTo(-7.4,0);ctx.closePath();},'#e08a3a',3);
- sh(E(-7,-3,3.6,3.2),'#e08a3a');Pth([[-9.6,-5],[-9.2,-8.6],[-7.4,-6]]);fs('#e08a3a',OLW*0.7);Pth([[-6.6,-6],[-5,-8.8],[-4.4,-5.6]]);fs('#e08a3a',OLW*0.7);
- ln(-8.8,-3.2,-7.6,-3,OL,0.7);ln(-6.6,-3.2,-5.4,-3,OL,0.7);ln(-2,-6.6,-1,-3.4,'#b0601e',1.1);ln(1.4,-7,2.2,-3.8,'#b0601e',1.1);
- txt('z',-12-Math.sin(t)*1.5,-10-(t*5%6),4,'rgba(255,255,255,.85)',700);ctx.restore();
- // napis kredą i kranik
- txt('XXX',21,-32,7,'#f4ead0');
- sh(P([[bx1-1,-14],[bx1+6,-14.6],[bx1+6.4,-11],[bx1-1,-10.6]]),'#c46a32');
- // gąsior zbiera krople
- const jx=46;ctx.beginPath();ctx.moveTo(jx-2.4,-24);ctx.lineTo(jx-2.4,-20);ctx.bezierCurveTo(jx-11,-18,-0+jx-11,0,jx-6,0);ctx.lineTo(jx+6,0);ctx.bezierCurveTo(jx+11,0,jx+11,-18,jx+2.4,-20);ctx.lineTo(jx+2.4,-24);ctx.closePath();
- ctx.fillStyle='rgba(190,225,215,.45)';ctx.fill();
- const lvl=-3-12*((t*0.04)%1);ctx.save();ctx.clip();ctx.fillStyle='rgba(232,190,80,.9)';ctx.fillRect(jx-12,lvl,24,24);ctx.fillStyle='rgba(255,245,190,.9)';ctx.fillRect(jx-12,lvl,24,0.8);ctx.restore();
- ctx.beginPath();ctx.moveTo(jx-2.4,-24);ctx.lineTo(jx-2.4,-20);ctx.bezierCurveTo(jx-11,-18,jx-11,0,jx-6,0);ctx.lineTo(jx+6,0);ctx.bezierCurveTo(jx+11,0,jx+11,-18,jx+2.4,-20);ctx.lineTo(jx+2.4,-24);ctx.closePath();ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.stroke();
- ell(jx-5,-11,1.3,4,'rgba(255,255,255,.65)',0.3);
- const dc=(t*1.4)%1;if(dc<0.7)ell(bx1+5.6,-10+dc/0.7*12,0.8,1.2,'#f0d070');
- puff(kx,ky-40,t,3,0.5,'rgba(240,240,240,A)');
- if(d&&d.t<1.2)ell(jx,-9,13,13,'rgba(255,230,120,'+(0.3+0.25*Math.sin(t*15)).toFixed(3)+')');
+ // piec z cegły: płaski kolor, dwie fugi
+ sh(R(-40,-24,32,24,4),'#a4512e',-16);
+ ln(-40,-16,-8,-16,'#7c3a20',1);ln(-40,-8,-8,-8,'#7c3a20',1);
+ ctx.beginPath();ctx.moveTo(-32,0);ctx.lineTo(-32,-8);ctx.quadraticCurveTo(-24,-15,-16,-8);ctx.lineTo(-16,0);ctx.closePath();fs('#2a1208',OLW*0.8);
+ for(let i=0;i<3;i++){const x=-28+i*4,h=4+3*fl+Math.sin(t*9+i*2);Pth([[x-2.2,0],[x,-h],[x+2.2,0]]);ctx.fillStyle=i===1?'#ffd25a':'#ff7a1a';ctx.fill();}
+ // kocioł miedziany: jeden kolor + odblask
+ sh(()=>{ctx.beginPath();ctx.moveTo(-38,-24);ctx.bezierCurveTo(-42,-40,-34,-52,-24,-52);ctx.bezierCurveTo(-14,-52,-6,-40,-10,-24);ctx.closePath();},'#c8703a',-20);
+ ell(-31,-42,2,5,'rgba(255,230,200,.6)',0.2);
+ sh(R(-27,-57,6,6,1.5),'#a85a2a',null,OLW*0.8);
+ // rurka do gąsiora
+ bez([-24,-55],[-6,-66],[10,-50],[14,-26],'#c8703a',3);
+ // gąsior z samogonem: poziom rośnie
+ const jx=16,lvl=-4-14*((t*0.04)%1);
+ const jug=()=>{ctx.beginPath();ctx.moveTo(jx-3,-26);ctx.lineTo(jx-3,-21);ctx.bezierCurveTo(jx-13,-20,jx-13,0,jx-7,0);ctx.lineTo(jx+7,0);ctx.bezierCurveTo(jx+13,0,jx+13,-20,jx+3,-21);ctx.lineTo(jx+3,-26);ctx.closePath();};
+ jug();ctx.fillStyle='rgba(205,232,226,.85)';ctx.fill();ctx.save();jug();ctx.clip();ctx.fillStyle='#e8be50';ctx.fillRect(jx-14,lvl,28,30);ctx.restore();
+ ell(jx-5,-12,1.2,4,'rgba(255,255,255,.7)',0.3);jug();ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.stroke();
+ const dc=(t*1.4)%1;if(dc<0.7)ell(jx,-25+dc*4,0.9,1.3,'#f0d070');
+ puff(-24,-60,t,2,0.5,'rgba(240,240,240,A)');
+ if(d&&d.t<1.2)ell(jx,-10,14,14,'rgba(255,230,120,'+(0.3+0.25*Math.sin(t*15)).toFixed(3)+')');
 };
 
 /* ---- Wyrzutnia gumofilców: proca z dętki rowerowej wbita w ziemię, sterta śmierdzących gumiaków ---- */
@@ -206,40 +178,24 @@ D.woda=(d,t)=>{
 };
 
 /* ---- Carski samowar: brzuchaty, z dwugłowym orłem, czajniczek w różyczki, korona na kominku ---- */
-D.samowar=(d,t)=>{
+D.samowar=(d,t)=>{   // uproszczony: mosiężny korpus, kranik, czajniczek
  const T=3.2,c=(t%T)/T;let k=c>0.45&&c<0.78?ease(Math.min((c-0.45)/0.05,(0.78-c)/0.05)):0;if(d)k=d.kick>0?1:0;
- shadow(0,34);
- // nóżki i podstawa
- for(const x of [-14,0,14]){sh(P([[x-3,0],[x+3,0],[x+2,-5],[x-2,-5]]),'#8a6420',null,OLW*0.8);}
- sh(E(0,-6,24,4),'#a8781e');
- sh(P([[-11,-8],[11,-8],[8,-18],[-8,-18]]),'#c08e2c',2);
- const glow=0.55+0.45*Math.sin(t*8)*Math.sin(t*5.1);for(const vx of [-5,0,5]){ctx.beginPath();ctx.moveTo(vx-1.4,-10);ctx.lineTo(vx-1.4,-13);ctx.arc(vx,-13,1.4,PI_,0);ctx.lineTo(vx+1.4,-10);ctx.closePath();fs('rgba(255,'+Math.round(110+60*glow)+',30,'+(0.6+0.4*glow).toFixed(2)+')',OLW*0.6);}
- // brzuch
- const body=()=>{ctx.beginPath();ctx.moveTo(-8,-18);ctx.bezierCurveTo(-28,-20,-28,-52,-13,-58);ctx.lineTo(13,-58);ctx.bezierCurveTo(28,-52,28,-20,8,-18);ctx.closePath();};
- body();ctx.fillStyle=brass(-24,24);ctx.fill();ctx.save();body();ctx.clip();ctx.fillStyle='rgba(30,15,5,.2)';ctx.fillRect(8,-60,24,44);
- for(let i=0;i<9;i++){const x=-22+i*5.4;ln(x,-58,x+1,-18,'rgba(90,60,10,.35)',0.8);}ctx.restore();body();ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.stroke();
- ctx.beginPath();ctx.moveTo(-25,-40);ctx.quadraticCurveTo(0,-37,25,-40);sk('#7a5214',2);
- // medalion z orłem
- sh(E(0,-29,6.4,6.6),'#7a1a14');ctx.fillStyle='#ffd34a';
- Pth([[0,-34],[2,-31.4],[5.4,-33],[4,-28.6],[2,-27.6],[1,-24.6],[-1,-24.6],[-2,-27.6],[-4,-28.6],[-5.4,-33],[-2,-31.4]]);ctx.fill();ell(-2.6,-33.6,1,1,'#ffd34a');ell(2.6,-33.6,1,1,'#ffd34a');
- // uchwyty
- for(const sx of [-1,1]){bez([sx*21,-50],[sx*31,-51],[sx*31,-38],[sx*24,-34],'#b8862a',2.2);ctx.save();ctx.translate(sx*29.4,-43);sh(R(-1.6,-3,3.2,6,1),'#2a1a10',null,OLW*0.6);ctx.restore();}
- // kranik w prawo (do wrogów)
- sh(P([[20,-26],[34,-25.6],[34.6,-21.4],[32,-19.4],[31,-22.4],[20,-22.4]]),'#d4a43a',27);
- ctx.save();ctx.translate(28,-26.4);ctx.rotate(-k*1.3);sh(P([[-0.8,0],[0.8,0],[0.8,-3],[3.6,-4],[3.6,-5.8],[-3.6,-5.8],[-3.6,-4],[-0.8,-3]]),'#d4a43a',null,OLW*0.7);ctx.restore();
- if(k>0){for(let i=0;i<5;i++){const p=((t*2.2+i/5)%1);ell(34+p*12,-20+p*p*14,1+p*2.2,1+p*2,'rgba(220,240,255,'+(0.75*(1-p)).toFixed(2)+')');}ell(36,-18,2.2,3,'rgba(200,230,255,.8)');}
- // korona i komin
- sh(P([[-14,-58],[14,-58],[12,-62],[-12,-62]]),'#c08e2c',4);
- sh(R(-3,-66,6,5,1),'#8a6420');
- // czajniczek w różyczki
- const tp=()=>{ctx.beginPath();ctx.ellipse(0,-73,11,7,0,0,7);};
- tp();ctx.fillStyle='#f2efe6';ctx.fill();ctx.save();tp();ctx.clip();ctx.fillStyle='rgba(30,15,5,.14)';ctx.fillRect(4,-82,10,16);
- for(const [x,y] of [[-5,-73],[2,-75],[-1,-70.4]]){for(let i=0;i<5;i++){const an=i*1.257;ell(x+Math.cos(an)*1.3,y+Math.sin(an)*1.3,1.1,1.1,'#d0342c');}ell(x,y,0.8,0.8,'#ffd34a');}
- ctx.fillStyle='#2a4fa0';ctx.fillRect(-11,-68.6,22,0.9);ctx.restore();tp();ctx.strokeStyle=OL;ctx.lineWidth=OLW;ctx.stroke();
- bez([9.6,-71],[15,-72],[16,-78],[18,-80],'#f2efe6',1.8);
- // korona carska zamiast gałki
- ctx.save();ctx.translate(0,-80);sh(P([[-5,0],[5,0],[6,-5],[3,-2.6],[0,-6.4],[-3,-2.6],[-6,-5]]),'#ffd34a',2);ell(0,-7,1,1,'#d0342c');ctx.restore();
- puff(19,-82,t,3,0.45,'rgba(240,240,240,A)',14);
+ shadow(0,30);
+ sh(P([[-14,0],[14,0],[9,-8],[-9,-8]]),'#a8781e',4);
+ const body=()=>{ctx.beginPath();ctx.moveTo(-9,-8);ctx.bezierCurveTo(-24,-12,-24,-44,-12,-50);ctx.lineTo(12,-50);ctx.bezierCurveTo(24,-44,24,-12,9,-8);ctx.closePath();};
+ sh(body,'#d4a43a',8);
+ ell(-11,-30,2,9,'rgba(255,240,190,.65)',0.1);
+ for(const s2 of [-1,1]){ctx.beginPath();ctx.moveTo(s2*18,-42);ctx.quadraticCurveTo(s2*26,-38,s2*20,-30);sk(OL,3.4+OLW*2);ctx.beginPath();ctx.moveTo(s2*18,-42);ctx.quadraticCurveTo(s2*26,-38,s2*20,-30);sk('#b8862a',3.4);}
+ // kranik w prawo
+ sh(P([[17,-20],[28,-20],[28,-15],[25,-15],[25,-17],[17,-17]]),'#d4a43a',null);
+ ctx.save();ctx.translate(23,-20);ctx.rotate(-k*1.2);sh(R(-3,-4,6,2.4,1),'#8a6420',null,OLW*0.7);ctx.restore();
+ sh(R(-10,-55,20,5,2),'#b8862a',4);
+ // czajniczek
+ sh(E(0,-61,9,6),'#f2efe6',3);ctx.fillStyle='#2a4fa0';ctx.fillRect(-8,-60,16,1);
+ bez([8,-62],[13,-63],[14,-67],[15,-69],'#f2efe6',1.8);sh(E(0,-67.5,2,1.4),'#2a4fa0',null,OLW*0.6);
+ puff(15,-72,t,2,0.45,'rgba(240,240,240,A)',12);
+ if(k>0){const len=56*k;ctx.beginPath();ctx.moveTo(28,-15);ctx.quadraticCurveTo(28+len*0.4,-18,28+len,-5);sk('rgba(200,230,255,.6)',4);ctx.beginPath();ctx.moveTo(28,-15);ctx.quadraticCurveTo(28+len*0.4,-18,28+len,-5);sk('rgba(255,255,255,.9)',1.2);
+  puff(40,-18,t*2,3,1.2,'rgba(245,248,255,A)',10);}
 };
 
 /* ---- Carska armata: brązowa lufa z lwią paszczą, zdobne koła, kule jak arbuzy, lont się skrzy ---- */
