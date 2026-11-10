@@ -194,8 +194,7 @@ D.samowar=(d,t)=>{   // uproszczony: mosiężny korpus, kranik, czajniczek
  sh(E(0,-61,9,6),'#f2efe6',3);ctx.fillStyle='#2a4fa0';ctx.fillRect(-8,-60,16,1);
  bez([8,-62],[13,-63],[14,-67],[15,-69],'#f2efe6',1.8);sh(E(0,-67.5,2,1.4),'#2a4fa0',null,OLW*0.6);
  puff(15,-72,t,2,0.45,'rgba(240,240,240,A)',12);
- if(k>0){const len=56*k;ctx.beginPath();ctx.moveTo(28,-15);ctx.quadraticCurveTo(28+len*0.4,-18,28+len,-5);sk('rgba(200,230,255,.6)',4);ctx.beginPath();ctx.moveTo(28,-15);ctx.quadraticCurveTo(28+len*0.4,-18,28+len,-5);sk('rgba(255,255,255,.9)',1.2);
-  puff(40,-18,t*2,3,1.2,'rgba(245,248,255,A)',10);}
+ if(k>0&&!d){const len=30*k;ctx.beginPath();ctx.moveTo(28,-15);ctx.quadraticCurveTo(28+len*0.5,-16,28+len,-5);sk('rgba(200,230,255,.6)',4);}   // w grze strumień to osobny efekt
 };
 
 /* ---- Carska armata: brązowa lufa z lwią paszczą, zdobne koła, kule jak arbuzy, lont się skrzy ---- */

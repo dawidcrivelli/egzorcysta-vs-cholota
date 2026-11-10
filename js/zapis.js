@@ -1,5 +1,5 @@
 /* ---------- zapis ---------- */
-let save={unlocked:1,best:0,load:null,sfx:true,mus:true,seen:[],stars:{},diff:'normal',evilUnlocked:1,evilStars:{},evilLoad:null};
+let save={unlocked:1,best:0,load:null,sfx:true,mus:true,seen:[],stars:{},diff:'normal',evilUnlocked:1,evilStars:{},evilLoad:null,style:'gra'};
 try{const s=JSON.parse(localStorage.getItem('evc_save_v1')||'null');if(s&&typeof s.unlocked==='number')save=Object.assign(save,s);}catch(e){}
 if(!save.v){save.unlocked=Math.min(11,Math.max(1,save.unlocked*2-1));save.load=null;save.v=3;}
 if(!Array.isArray(save.seen))save.seen=[];

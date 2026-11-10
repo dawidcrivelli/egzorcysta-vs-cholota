@@ -91,13 +91,14 @@ function drawModal(m){
 }
 function panel(w,h){const x=(LW-w)/2,y=(LH-h)/2;ctx.fillStyle='rgba(10,6,2,.6)';ctx.fillRect(0,0,LW,LH);ctx.fillStyle='rgba(0,0,0,.4)';rrect(x+4,y+6,w,h,14);ctx.fill();ctx.fillStyle='#f1e2bd';rrect(x,y,w,h,14);ctx.fill();ctx.lineWidth=4;ctx.strokeStyle='#5a3a1e';ctx.stroke();return{x,y};}
 function drawPause(){
- const p=panel(320,300);txt('Pauza',LW/2,p.y+40,26,900,'#2a1608');
+ const p=panel(320,346);txt('Pauza',LW/2,p.y+40,26,900,'#2a1608');
  button(LW/2-110,p.y+56,107,40,'Graj dalej',()=>{paused=false;},{size:14});
  button(LW/2+3,p.y+56,107,40,'Almanach',()=>openAlm('play'),{size:14,bg:'#cdb48a'});
  button(LW/2-110,p.y+108,107,36,save.mus?'Muzyka: tak':'Muzyka: nie',()=>toggleMus(),{size:12,on:save.mus});
  button(LW/2+3,p.y+108,107,36,save.sfx?'Dźwięki: tak':'Dźwięki: nie',()=>toggleSfx(),{size:12,on:save.sfx});
  button(LW/2-110,p.y+156,220,40,'Zacznij noc od nowa',()=>{newGame(G.li,G.load);},{size:14});
  button(LW/2-110,p.y+206,220,40,'Wybór nocy',()=>{paused=false;scene='levels';},{size:14,bg:'#cdb48a'});
+ button(LW/2-110,p.y+254,220,36,'Grafika: '+styleName(),()=>nextGameStyle(),{size:13,bg:'#cdb48a'});
 }
 function drawLoseScene(t){
  const fl=LH*0.8;
@@ -238,6 +239,7 @@ function drawTitle(){
  button(cx-196,248,186,50,'Tryb egzorcysty',()=>{goFull();MODE='good';scene='levels';},{size:17});
  button(cx+10,248,186,50,'Tryb chołoty',()=>{goFull();MODE='evil';scene='levels';},{size:17,bg:'#b89ae0'});
  button(cx-70,308,140,36,'Almanach',()=>openAlm('title'),{size:14,bg:'#cdb48a'});
+ button(LW-122,54,108,34,'Grafika: '+styleName(),()=>nextGameStyle(),{size:11,bg:'#cdb48a'});
  const on=save.mus||save.sfx;button(LW-122,14,108,34,on?'Dźwięk: tak':'Dźwięk: nie',()=>{const v=!(save.mus||save.sfx);save.mus=v;save.sfx=v;applyVol();persist();if(v)musicStart();else musicStop();},{size:12,on});
 }
 function drawLevels(){

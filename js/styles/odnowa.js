@@ -151,7 +151,7 @@ function holdGasior(far,ang){ctx.save();ctx.translate(0,4);ctx.rotate(-ang);ctx.
  ctx.font='900 3.6px '+FONT;ctx.textAlign='center';ctx.fillStyle='#8a1a12';ctx.fillText('XXX',0,3.8);
  ctx.fillStyle='rgba(255,255,255,.6)';ctx.fillRect(-4.6,-4,0.8,7);
  Pth([[-1.8,-9],[1.8,-9],[1.8,-11.2],[-1.8,-11.2]]);fs('#c8b48a',OLW*0.6);ctx.restore();}
-function holdBanner(far,ang){if(!(CS.shield>0))return;const t=CS.t||0;ctx.save();ctx.translate(0,3);ctx.rotate(-ang);ctx.scale(0.62,0.62);
+function holdBanner(far,ang){if(!(CS.shield>0))return;const t=CS.t||0;ctx.save();ctx.translate(0,3);ctx.rotate(-ang);ctx.scale(0.5,0.5);
  Pth([[-1.6,10],[1.6,10],[1.6,-62],[-1.6,-62]]);fs('#7a5232');ctx.beginPath();ctx.arc(0,-64,2.6,0,7);fs('#d4af37');
  const w=x=>Math.sin(t*5+x*0.12)*2.2*(-x/50),top=[],bot=[];
  for(let x=-2;x>=-62;x-=5){top.push([x,-60+w(x)]);bot.unshift([x,-28+w(x)+(x<-50?(x+50)*0.08:0)]);}
@@ -311,16 +311,16 @@ function grim(R,m,cx=-0.36,w=0.24,y=0.56){
 }
 /* rejestr dla dalszych plików odnowa_*.js: C = postaci na szkielecie, P = ich pozy (st→poza),
    X = chołota bez szkieletu (st,t) w jednostkach 100 = wzrost, D = sprzęt (d,t) w jednostkach 72 = pole jak DRAW w grze, H = Zdzichu */
-const ODN=window.ODN={grim,C,P:{},X:{},D:{},H:null,figure,pose,walk,stand,eyes,F,ell,oell,dot,curve,rotp,claws,holdGasior,holdBanner};
+const ODN=window.ODN={FIT:{carski:0.96,palac:0.95,komunista:0.91},FITD:{woda:0.97},grim,C,P:{},X:{},D:{},H:null,figure,pose,walk,stand,eyes,F,ell,oell,dot,curve,rotp,claws,holdGasior,holdBanner};
 STYLES.push({id:'odnowa',name:'Odnowa: nowe figury 3/4',desc:'Kontur i cieniowanie jak w grze, ale nowe sylwetki i proporcje (duża głowa, krępe ciało) oraz twarz w 3/4 zgodna z ciałem.',
  en:k=>!!(C[k]||ODN.X[k]),def:k=>!!ODN.D[k],hero:()=>!!ODN.H,
  draw(k,x,y,h,st){
-  const sc=h/100,prev=OLW;
+  const sc=h/100*(ODN.FIT[k]||1),prev=OLW;   // FIT: pomniejszenie, żeby postać mieściła się w ramce klatki gry (tools/fit.js)
   ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);OLW=clamp(1.8/sc,0.9,3.2);CS=st;
   try{if(C[k])figure(C[k],pose(k,st),st.t||0,st);else if(ODN.X[k])ODN.X[k](st,st.t||0);}finally{OLW=prev;ctx.restore();}
  },
  drawDef(k,x,by,sz,d,t){
-  const sc=sz/72,prev=OLW;ctx.save();ctx.translate(x,by);ctx.scale(sc,sc);OLW=clamp(1.7/sc,0.9,4);
+  const sc=sz/72*(ODN.FITD[k]||1),prev=OLW;ctx.save();ctx.translate(x,by);ctx.scale(sc,sc);OLW=clamp(1.7/sc,0.9,4);
   try{if(d&&d.hitT>0)ctx.translate(Math.sin((t||0)*80)*1.4,0);ODN.D[k](d,t||0);}finally{OLW=prev;ctx.restore();}
  },
  drawHero(x,y,h,t){const sc=h/100,prev=OLW;ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);OLW=clamp(1.8/sc,0.9,3.2);CS={t};
