@@ -19,6 +19,7 @@ function newGame(li,load){
  G={li,lv,endless:!!lv.endless,t:0,sam:Math.max(0,st0-150),lost:0,ursUsed:false,intro:{t:0,drop:[1.6,3.1,4.6],done:0},defs:[],grid:[],ens:[],proj:[],picks:[],fx:[],
   urs:[0,1,2,3,4].map(()=>({st:'ready',x:-0.55})),cd:{},sel:null,wi:0,sq:[],banner:null,toast:null,shake:0,sky:7,
   modal:[],modalT:T,seen:{},winT:-1,over:false,wave:0,nextWave:15,kills:0,steal:0,deco:[],plows:[],load};
+ G.tombs=[];G.tombNight=!lv.endless&&!!THEMES[lv.theme].moon;   // noce z księżycem: trupy zostawiają groby (logika.js)
  for(let r=0;r<5;r++){G.grid.push([]);for(let c=0;c<9;c++)G.grid[r].push(null);}
  for(let i=0;i<60;i++)G.deco.push({x:rr(0.05,8.95),r:rnd(5),dy:rr(0.15,0.85),k:rnd(4)});
  G.cards=ORDER.filter(k=>load.includes(k)).concat(['lopata']);
@@ -32,7 +33,7 @@ function newGame(li,load){
  scene='play';paused=false;queueWarm();
 }
 function evilSetup(li,load){
- const lv=LEVELS[li];G.evil=true;G.endless=false;G.waves=[];G.lastT=1;G.intro=null;G.sky=1e9;
+ const lv=LEVELS[li];G.evil=true;G.tombNight=false;G.endless=false;G.waves=[];G.lastT=1;G.intro=null;G.sky=1e9;
  G.sam=150;G.botSam=100+li*20;G.botT=1.5;G.bcd={};G.dawn=195+li*5;G.graves=[];G.farmBimb=EVB.bimbMax+Math.min(2,Math.floor(li/5));
  G.cards=['grob'].concat(evilUnits(li).filter(k=>load.includes(k))).concat(['lopata']);
  G.cd={};for(const k of G.cards)G.cd[k]=0;

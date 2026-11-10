@@ -179,6 +179,14 @@ function parkedUrsus(x,y,s){const sc=s/64,bw=110*sc,bh=112*sc,ax=bw/2,ay=100*sc;
 /* ikony znajdziek i groby z bufora */
 function iconC(kind,x,y,s){const f=kind==='soul'?((Math.floor(T*6)%4)+4)%4:0,bw=46*s,bh=50*s,ax=bw/2,ay=bh*0.62;
  const c=sprite('I|'+kind+'|'+s+'|'+f,bw,bh,ax,ay,()=>{if(kind==='soul'){const old=T;T=f/6;soulIcon(0,0,s,true);T=old;}else bottleIcon(0,0,s,true);});ctx.drawImage(c,x-ax,y-ay,bw,bh);}
+/* grób po trupie: kopiec ze zniczem; przed wstaniem trzęsie się i wystaje ręka, po wstaniu rozkopany */
+function drawTomb(q){const x=PX(q.c+0.5),y=FY(q.r)+3,sz=Math.min(L.cellW,L.rowH)*0.85,warn=!q.rose&&q.t<5;
+ ctx.save();if(warn)ctx.translate(Math.sin(T*40)*1.2*(1-q.t/5),0);graveC(x,y,sz,T+q.c*0.37);ctx.restore();
+ const u=sz/60;
+ if(q.rose){ctx.fillStyle='#1e140c';ctx.beginPath();ctx.ellipse(x-2*u,y-4*u,12*u,4*u,0,0,7);ctx.fill();}
+ else if(warn){const k=1-q.t/5,hy=y-4*u-k*10*u;ctx.fillStyle='#9fc07e';ctx.strokeStyle=OL;ctx.lineWidth=1;
+  ctx.beginPath();ctx.ellipse(x+6*u,hy,3*u,4*u,0,0,7);ctx.fill();ctx.stroke();for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(x+(4+i*2)*u,hy-3*u);ctx.lineTo(x+(4+i*2)*u+Math.sin(T*12+i)*u,hy-7*u);ctx.lineWidth=1.6*u;ctx.strokeStyle='#9fc07e';ctx.stroke();}}
+}
 function graveC(x,y,sz,t){const f=((Math.floor(t*6)%6)+6)%6,q=Math.round(sz*2)/2,bw=q*1.1,bh=q*0.95,ax=bw/2,ay=bh*0.85;
  const c=sprite('G|'+q+'|'+f,bw,bh,ax,ay,()=>drawGrave(0,0,q,f/6));ctx.drawImage(c,x-ax,y-ay,bw,bh);}
 function drawUrsusRow(r){
@@ -194,9 +202,10 @@ function drawPlay(){
  if(G.shake>0)ctx.translate(rr(-3,3)*G.shake*4,rr(-3,3)*G.shake*4);
  drawField(th);
  if(G.sel&&live&&G.evil){for(let r=0;r<5;r++){if(G.sel==='grob'){for(const c of [7,8])if(!G.graves.some(q=>q.r===r&&q.c===c)){ctx.fillStyle='rgba(170,220,255,.16)';ctx.fillRect(PX(c)+2,RY(r)+2,L.cellW-4,L.rowH-4);}}else if(G.sel==='lopata'){for(const q of G.graves)if(q.r===r){ctx.fillStyle='rgba(255,120,90,.2)';ctx.fillRect(PX(q.c)+2,RY(r)+2,L.cellW-4,L.rowH-4);}}else{ctx.fillStyle='rgba(200,170,255,.12)';ctx.fillRect(PX(7)+2,RY(r)+2,L.cellW*2-4,L.rowH-4);}}}
- if(G.sel&&live&&!G.evil){for(let r=0;r<5;r++)for(let c=0;c<9;c++){const occ=G.grid[r][c];if(G.sel==='lopata'?occ:!occ){ctx.fillStyle=G.sel==='lopata'?'rgba(255,120,90,.18)':'rgba(255,240,150,.13)';ctx.fillRect(PX(c)+2,RY(r)+2,L.cellW-4,L.rowH-4);}}}
+ if(G.sel&&live&&!G.evil){for(let r=0;r<5;r++)for(let c=0;c<9;c++){const occ=G.grid[r][c]||tombAt(r,c);if(G.sel==='lopata'?occ:!occ){ctx.fillStyle=G.sel==='lopata'?'rgba(255,120,90,.18)':'rgba(255,240,150,.13)';ctx.fillRect(PX(c)+2,RY(r)+2,L.cellW-4,L.rowH-4);}}}
  for(let r=0;r<5;r++)drawUrsusRow(r);
  for(let r=0;r<5;r++){
+  if(G.tombs)for(const q of G.tombs)if(q.r===r)drawTomb(q);
   if(G.graves)for(const gr of G.graves)if(gr.r===r)graveC(PX(gr.c+0.5),FY(r)+3,Math.min(L.cellW,L.rowH)*0.85,T+gr.c*0.37);
   for(const d of G.defs)if(d.r===r&&d.def.trap)drawDefOnGrid(d);
   for(const d of G.defs)if(d.r===r&&!d.def.trap)drawDefOnGrid(d);

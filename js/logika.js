@@ -22,7 +22,7 @@ function update(dt){
   if(g.t>=g.dawn&&!g.over){evilLose();return;}
  }
  if(g.ens.some(e=>e.k==='nysa'&&!e.dead))sfx('siren');
- updDefs(dt);updEns(dt);if(g.over)return;updProj(dt);updPicks(dt);updFx(dt);updUrs(dt);updPlows(dt);
+ updDefs(dt);updEns(dt);if(g.over)return;if(g.tombs&&g.tombs.length)updTombs(dt);updProj(dt);updPicks(dt);updFx(dt);updUrs(dt);updPlows(dt);
  g.ens=g.ens.filter(e=>!e.dead);g.defs=g.defs.filter(d=>!d.dead);
  if(!g.evil&&!g.endless&&g.wi>=g.waves.length&&g.sq.length===0&&g.ens.length===0&&g.winT<0)g.winT=1.6;
  if(g.winT>0){g.winT-=dt;if(g.winT<=0)win();}
@@ -179,9 +179,10 @@ function selectCard(k){
 }
 function tryPlace(r,c){
  const k=G.sel;if(!k)return;
- if(k==='lopata'){const d=G.grid[r][c];if(d){sfx('place');const back=Math.floor(d.def.cost/2);G.sam+=back;killDef(d,false,'shovel');if(back)fxText(PX(c+0.5),FY(r)-L.rowH*0.8,'+'+back+' l','#ffcf4a');}G.sel=null;return;}
+ if(k==='lopata'){const tb=tombAt(r,c);if(tb){G.tombs.splice(G.tombs.indexOf(tb),1);sfx('place');burst(PX(c+0.5),FY(r)-4,'#5e4630',12,80);fxText(PX(c+0.5),FY(r)-L.rowH*0.8,'Zakopany!','#c8b8a0');G.sel=null;return;}const d=G.grid[r][c];if(d){sfx('place');const back=Math.floor(d.def.cost/2);G.sam+=back;killDef(d,false,'shovel');if(back)fxText(PX(c+0.5),FY(r)-L.rowH*0.8,'+'+back+' l','#ffcf4a');}G.sel=null;return;}
  const def=DEF[k];
  if(G.grid[r][c]){toast('To pole jest zajęte');return;}
+ if(tombAt(r,c)){toast('Tu jest grób. Wykop go łopatą');return;}
  if(G.sam<def.cost){toast('Za mało samogonu');G.sel=null;return;}
  if(G.cd[k]>0){G.sel=null;return;}
  G.sam-=def.cost;G.cd[k]=def.cd;sfx('place');
@@ -196,3 +197,20 @@ function makeDef(k,r,c){
  burst(PX(c+0.5),FY(r)-4,'#a08050',8,60);return d;
 }
 
+
+/* ---------- groby po trupach (noce z księżycem) ----------
+   Trup czasem zostawia grób na pustym polu. Na grobie nie da się nic postawić; łopata go wykopuje (za darmo).
+   Grób leżący dłużej niż TOMB.rise sekund raz wypuszcza nowego trupa (ten już grobu nie zostawia). */
+const TOMB={chance:0.35,max:3,rise:20};
+function tombAt(r,c){return G.tombs?G.tombs.find(q=>q.r===r&&q.c===c):null;}
+function tombDrop(e){
+ const r=e.row,c=Math.floor(e.x);
+ if(c<1||c>8||G.grid[r][c]||tombAt(r,c)||G.tombs.length>=TOMB.max||Math.random()>TOMB.chance)return;
+ G.tombs.push({r,c,t:TOMB.rise,rose:false});
+ burst(PX(c+0.5),FY(r)-4,'#5e4630',10,70);fxText(PX(c+0.5),FY(r)-L.rowH*0.9,'GRÓB!','#c8b8a0');
+ if(!G.tombHint){G.tombHint=true;G.toast={tx:'Trup zostawił grób. Wykop go łopatą, zanim wstanie z niego nowy trup.',t:4.5};}
+}
+function updTombs(dt){
+ for(const q of G.tombs){if(q.rose)continue;q.t-=dt;
+  if(q.t<=0){q.rose=true;const e=spawn('trup',q.r,q.c+0.55);e.fromTomb=true;burst(PX(q.c+0.5),FY(q.r)-6,'#5e4630',14,90);fxText(PX(q.c+0.5),FY(q.r)-L.rowH*0.9,'WSTAJE!','#9fc07e');sfx('groan');}}
+}
