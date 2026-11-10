@@ -324,6 +324,11 @@ STYLES.push({id:'odnowa',name:'Odnowa: nowe figury 3/4',desc:'Kontur i cieniowan
   try{if(d&&d.hitT>0)ctx.translate(Math.sin((t||0)*80)*1.4,0);ODN.D[k](d,t||0);}finally{OLW=prev;ctx.restore();}
  },
  drawHero(x,y,h,t){const sc=h/100,prev=OLW;ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);OLW=clamp(1.8/sc,0.9,3.2);CS={t};
-  try{ODN.H(t);}finally{OLW=prev;ctx.restore();}}
+  try{ODN.H(t);}finally{OLW=prev;ctx.restore();}},
+ // Zdzichu w scenach gry: pozy z gry (walkPose, SEAT, strach) pasują do tego szkieletu; bez polewania
+ drawHeroPose(x,y,h,st){const c=C.dziad;if(!c)return false;const t=st.t||0,sc=h/100,prev=OLW;
+  ctx.save();ctx.translate(x,y);ctx.scale(st.flip?-sc:sc,sc);OLW=clamp(1.8/sc,0.9,3.2);CS={...st,noPour:!!st.pose};
+  try{figure(c,st.pose||pose('dziad',{t}),t,CS);}finally{OLW=prev;ctx.restore();}return true;},
+ drawProj(...a){return ODN.PROJ?ODN.PROJ(...a):false;}
 });
 })();

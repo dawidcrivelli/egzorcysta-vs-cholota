@@ -237,7 +237,7 @@ const DZ={R:19,leg:[13,12.5],legW:[11.6,10,8.6],arm:[12.5,12],armW:[10.4,9,8],hi
   const A=J.arms[0],w=A.wr,tap=J.tap||[20,-50];
   ctx.beginPath();ctx.moveTo(tap[0],tap[1]);ctx.quadraticCurveTo((tap[0]+w[0])/2+4,Math.max(tap[1],w[1])+14,w[0],w[1]);sk(OL,4.4);
   ctx.beginPath();ctx.moveTo(tap[0],tap[1]);ctx.quadraticCurveTo((tap[0]+w[0])/2+4,Math.max(tap[1],w[1])+14,w[0],w[1]);sk('#3a3a3a',2.6);
-  const c=(t%2.8)/2.8;if(c<0.36||c>0.75)return;
+  const c=(t%2.8)/2.8;if(CS&&CS.noPour||c<0.36||c>0.75)return;
   const q=(c-0.36)/0.39,d=[A.wr[0]-A.el[0],A.wr[1]-A.el[1]],n=Math.hypot(d[0],d[1])||1,bx=A.wr[0]+d[0]/n*36,by=A.wr[1]+d[1]/n*36;
   for(let i=0;i<9;i++){const an=-0.7+i*0.17,r=6+q*46;ctx.fillStyle='rgba(150,200,255,'+(0.9*(1-q))+')';ctx.beginPath();ctx.ellipse(bx-Math.cos(an)*r,by+Math.sin(an)*r+q*q*26,1.8,2.6,0,0,7);ctx.fill();
    ctx.fillStyle='rgba(255,240,170,'+(0.8*(1-q))+')';ctx.beginPath();ctx.arc(bx-Math.cos(an)*r,by+Math.sin(an)*r+q*q*26-3,0.8,0,7);ctx.fill();}}

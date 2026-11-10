@@ -19,10 +19,11 @@ function light(fn){
   const fsl=this.fillStyle,m=typeof fsl==='string'&&fsl.match(/^rgba\((\d+), (\d+), (\d+), ([\d.]+)\)$/);
   if(m&&+m[1]<80&&+m[2]<80&&+m[3]<80&&+m[4]<0.5){this.fillStyle=`rgba(${m[1]}, ${m[2]}, ${m[3]}, ${(+m[4]*0.5).toFixed(3)})`;fill0.apply(this,a);this.fillStyle=fsl;return;}
   return fill0.apply(this,a);};
- try{fn();}finally{window.tint=tint0;P.stroke=stroke0;P.fill=fill0;}
+ try{return fn();}finally{window.tint=tint0;P.stroke=stroke0;P.fill=fill0;}
 }
 STYLES.push({id:'odnowa_lekka',name:'Odnowa lekka: jaśniej, kolorowy kontur',
  desc:'Te same rysunki co Odnowa, ale lżejsze cienie i cieńszy kontur w kolorze wypełnienia zamiast czarnego.',
  en:O.en,def:O.def,hero:O.hero,
- draw:(...a)=>light(()=>O.draw(...a)),drawDef:(...a)=>light(()=>O.drawDef(...a)),drawHero:(...a)=>light(()=>O.drawHero(...a))});
+ draw:(...a)=>light(()=>O.draw(...a)),drawDef:(...a)=>light(()=>O.drawDef(...a)),drawHero:(...a)=>light(()=>O.drawHero(...a)),
+ drawHeroPose:(...a)=>light(()=>O.drawHeroPose(...a)),drawProj:(...a)=>light(()=>O.drawProj(...a))});
 })();
