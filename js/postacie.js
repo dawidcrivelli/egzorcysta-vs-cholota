@@ -137,7 +137,7 @@ function toolbar(){
 }
 
 function frame(now){
- const dt=last?Math.min(0.05,(now-last)/1000):0;last=now;FDT=dt*UI.speed;T+=FDT;
+ const dt=last?Math.min(0.05,(now-last)/1000):0;last=now;FDT=dt*UI.speed;T+=FDT;SPRB.ms=0;
  for(const c of cards)if(c.vis)drawCard(c);
  requestAnimationFrame(frame);
 }

@@ -1,13 +1,32 @@
 /* ---------- bufor gotowych klatek (szybsze rysowanie na telefonie) ---------- */
-const SPR=new Map();let FIELD=null;
-function sprite(key,w,h,ax,ay,fn){
+const SPR=new Map(),LASTSPR=new Map();let FIELD=null;
+/* limit czasu na rysowanie nowych klatek w jednej klatce gry: gdy się skończy, a klatka ma prefiks
+   (ta sama postać/sprzęt w tym samym rozmiarze), pokaż ostatnią gotową zamiast szarpać */
+const SPRB={ms:0,max:4,skip:0};
+function sprite(key,w,h,ax,ay,fn,pre){
  let c=SPR.get(key);
- if(c){SPR.delete(key);SPR.set(key,c);return c;}
- if(SPR.size>=700)SPR.delete(SPR.keys().next().value);
+ if(c){SPR.delete(key);SPR.set(key,c);if(pre)LASTSPR.set(pre,c);return c;}
+ if(pre&&SPRB.ms>=SPRB.max){const o=LASTSPR.get(pre);if(o){SPRB.skip++;return o;}}
+ const t0=performance.now();
+ if(SPR.size>=900)SPR.delete(SPR.keys().next().value);
  const sc=S*DPR;c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(w*sc));c.height=Math.max(1,Math.ceil(h*sc));
- const g=c.getContext('2d'),old=ctx;ctx=g;try{g.setTransform(sc,0,0,sc,0,0);g.translate(ax,ay);fn();}finally{ctx=old;}
- SPR.set(key,c);return c;
+ const g=c.getContext('2d',{willReadFrequently:!!pre}),old=ctx;ctx=g;try{g.setTransform(sc,0,0,sc,0,0);g.translate(ax,ay);fn();}finally{ctx=old;}
+ if(pre)c=trim(c,g,sc);
+ SPR.set(key,c);if(pre)LASTSPR.set(pre,c);SPRB.ms+=performance.now()-t0;return c;
 }
+/* przycina klatkę do narysowanych pikseli: postać zajmuje mniej niż połowę pudełka, a każda klatka to tekstura w pamięci
+   (na telefonie limit pamięci płócien). c.tx,c.ty,c.tw,c.th: położenie wyciętego kawałka w jednostkach pudełka */
+function trim(c,g,sc){
+ const W=c.width,H=c.height,d=g.getImageData(0,0,W,H).data;let x0=W,y0=H,x1=-1,y1=-1;
+ for(let y=0;y<H;y++){let row=y*W*4+3;for(let x=0;x<W;x++,row+=4)if(d[row]){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;y1=y;}}
+ const t=document.createElement('canvas');
+ if(x1<0){t.width=t.height=1;t.tx=t.ty=t.tw=t.th=0;return t;}
+ x0=Math.max(0,x0-1);y0=Math.max(0,y0-1);x1=Math.min(W-1,x1+1);y1=Math.min(H-1,y1+1);
+ const tw=x1-x0+1,th=y1-y0+1;t.width=tw;t.height=th;t.getContext('2d').drawImage(c,x0,y0,tw,th,0,0,tw,th);
+ t.tx=x0/sc;t.ty=y0/sc;t.tw=tw/sc;t.th=th/sc;return t;
+}
+/* rysuje klatkę z bufora w pudełku (x,y = lewy górny róg, bw×bh); przycięta trafia w swoje miejsce */
+function blit(c,x,y,bw,bh){if(c.tw!=null){if(c.tw)ctx.drawImage(c,x+c.tx,y+c.ty,c.tw,c.th);}else ctx.drawImage(c,x,y,bw,bh);}
 const NONH_P={palac:Math.PI*2/3,swinia:Math.PI*2/12,kura:Math.PI*2/8,burak:Math.PI*2/9,buraczek:Math.PI*2/9,barszcz:Math.PI*2/6,krowa:Math.PI*2/7,nysa:Math.PI*2/7};
 /* cykl animacji: okres P i liczba klatek n w buforze (gra, rozgrzewka bufora, przegląd postaci) */
 function cycleOf(k,st){
@@ -16,8 +35,11 @@ function cycleOf(k,st){
 }
 function frameFor(k,st){
  if(!st.eat&&!st.walk)return{id:NONH_P[k]?'i0':'i',t:0};
- const t=st.t||0,{P,n,sp}=cycleOf(k,st),i=Math.floor(((t%P)+P)%P/P*n);
- return{id:st.eat?'e'+i:'w'+i+'s'+Math.round(sp*100),t:i/n*P};
+ const t=st.t||0,{P,n}=cycleOf(k,st),i=Math.floor(((t%P)+P)%P/P*n);
+ if(st.eat)return{id:'e'+i,t:i/n*P};
+ // poza zależy od fazy t*sp, więc klatkę i rysuje się raz, dla prędkości bazowej (spowolnienie nie tworzy nowych klatek)
+ const sp0=EN[k]?EN[k].sp:st.sp,P0=cycleOf(k,{sp:sp0}).P;
+ return{id:'w'+i,t:i/n*P0,sp:sp0};
 }
 function nPalac(t,walk){
  const s=walk?Math.sin(t*3):0,lift=walk?Math.max(0,Math.sin(t*3))*6:0,lift2=walk?Math.max(0,-Math.sin(t*3))*6:0;
@@ -47,8 +69,8 @@ function drawEnemyKey(k,x,y,h,st){
  const fr=frameFor(k,st),hq=Math.round(h*2)/2;
  const key='E|'+k+'|'+hq+'|'+fr.id+'|'+(st.shield>0?1:0)+(st.helm>0?1:0)+(st.talk?1:0)+'|'+(k==='boss'?(st.hp<0.3?2:st.hp<0.6?1:0):0);
  const bw=hq*1.8,bh=hq*1.5,ax=bw/2,ay=bh*0.88;
- const c=sprite(key,bw,bh,ax,ay,()=>drawEnemyRaw(k,0,0,hq,Object.assign({},st,{t:fr.t})));
- ctx.drawImage(c,x-ax,y-ay,bw,bh);
+ const c=sprite(key,bw,bh,ax,ay,()=>drawEnemyRaw(k,0,0,hq,Object.assign({},st,{t:fr.t},fr.sp?{sp:fr.sp}:null)),'E|'+k+'|'+hq+'|'+(st.shield>0?1:0)+(st.helm>0?1:0));
+ blit(c,x-ax,y-ay,bw,bh);
 }
 function defSig(k,d,t){
  const F6=((Math.floor(t*6)%6)+6)%6;let tq=F6/6;if(!d)return{id:'icon',t:0,d:null};
@@ -61,7 +83,7 @@ function defSig(k,d,t){
   case 'aparatura':id=d.armed?'A'+(F6%2):'u'+Math.ceil(d.armT);d2={armed:d.armed,armT:Math.ceil(d.armT)};break;
   case 'lancuch':id=d.reload>0?'R':'r';d2={reload:d.reload};tq=0;break;
   case 'rozlew':{const lq=Math.ceil(d.life/5);id='u'+lq+F6;d2={life:lq*5};break;}
-  case 'pralka':case 'armata':{const kk=d.kick>0?Math.ceil(d.kick*16):0;id='k'+kk+F6;d2={kick:kk/16};break;}
+  case 'pralka':case 'armata':{const kk=d.kick>0?Math.ceil(d.kick*16/4)*4:0;id='k'+kk+(kk?'':F6);d2={kick:kk/16};if(kk)tq=0;break;}
   case 'samowar':id=(d.kick>0?'o':'c')+F6;d2={kick:d.kick>0?1:0};break;
   case 'bimbrownia':id=(d.t<1.2?'g':'n')+F6;d2={t:d.t<1.2?0:5};break;
   case 'plug':case 'maluch':id='m'+F6;d2={};break;
@@ -70,8 +92,8 @@ function defSig(k,d,t){
 }
 function drawDef(k,cx,by,sz,d,tt){
  const sig=defSig(k,d,tt||0),sq=Math.round(sz*2)/2,bw=sq*1.6,bh=sq*1.5,ax=bw/2,ay=bh*0.86;
- const c=sprite('D|'+k+'|'+sq+'|'+sig.id,bw,bh,ax,ay,()=>drawDefRaw(k,0,0,sq,sig.d,sig.t));
+ const c=sprite('D|'+k+'|'+sq+'|'+sig.id,bw,bh,ax,ay,()=>drawDefRaw(k,0,0,sq,sig.d,sig.t),'D|'+k+'|'+sq);
  const ox=d&&d.hitT>0?Math.sin((tt||0)*80)*1.4*sq/72:0;
- ctx.drawImage(c,cx-ax+ox,by-ay,bw,bh);
+ blit(c,cx-ax+ox,by-ay,bw,bh);
 }
 
