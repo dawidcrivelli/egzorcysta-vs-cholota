@@ -113,13 +113,32 @@ function build(k,st){
  if(!a.behind)a.near();
 }
 
-function render(x,y,h){
- const px=h/ROWS,X=v=>Math.round(x+v*px),Y=v=>Math.round(y+(v-GROUND)*px);
- ctx.fillStyle=SHADOW;SHADOW_W.forEach((w,i)=>ctx.fillRect(X(-w-1),Y(GROUND-1+i),X(w)-X(-w-1),Y(GROUND+i)-Y(GROUND-1+i)));
+/* rysuje siatkę G: px = rozmiar piksela, ground = wiersz ziemi; kolor = litera z PAL, cyfra z DITH albo wprost '#hex'/'rgba(…)' */
+function paint(x,y,px,ground,shadow){
+ const X=v=>Math.round(x+v*px),Y=v=>Math.round(y+(v-ground)*px);
+ if(shadow){ctx.fillStyle=SHADOW;shadow.forEach((w,i)=>ctx.fillRect(X(-w-1),Y(ground-1+i),X(w)-X(-w-1),Y(ground+i)-Y(ground-1+i)));}
  for(const [k,c] of G){const cx=k%256-128,cy=Math.floor(k/256)-64,d=DITH[c];
-  ctx.fillStyle=PAL[d?d[(cx+cy)&1]:c];ctx.fillRect(X(cx),Y(cy),X(cx+1)-X(cx),Y(cy+1)-Y(cy));}
+  ctx.fillStyle=d?PAL[d[(cx+cy)&1]]:PAL[c]||c;ctx.fillRect(X(cx),Y(cy),X(cx+1)-X(cx),Y(cy+1)-Y(cy));}
 }
+const render=(x,y,h)=>paint(x,y,h/ROWS,GROUND,SHADOW_W);
 
-STYLES.push({id:'pixel',name:'Piksel 16-bit',desc:'Pixel art 16-bit: siatka 40 pikseli, 16 kolorów, dithering i 4 klatki chodu.',
- draw(k,x,y,h,st){build(k,st);render(x,y,h);}});
+/* rejestr dla plików pixel_*.js (globalnie window.PIX, bo PX to funkcja gry). Ludzie i chołota: PX.E[k]=st=>{…} rysuje do siatki (40 wierszy = wzrost, ziemia w wierszu 40,
+   twarzą w lewo, x≈0 to środek; wolno wyjść poza 0..40 w górę do -64). PX.SH[k] = szerokości cienia (opcjonalnie).
+   Sprzęt: PX.D[k]=(d,t)=>{…}, 36 pikseli = pole, ziemia w wierszu 0, w górę ujemne y. Zdzichu: PX.H=t=>{…} jak chołota. */
+const PX=window.PIX={E:{},D:{},H:null,SH:{},PAL,DITH,OUT,ROWS,GROUND,HIP,LEG_END,WALK,IDLE,POSES,
+ begin(){G=new Map();},layer,stamp,limb,leg,fist,text,textW,GLYPH,
+ rect:(x,y,w,h,c)=>p=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)p(x+i,y+j,c);},
+ ell:(cx,cy,rx,ry,c)=>p=>{for(let j=Math.floor(-ry);j<=Math.ceil(ry);j++)for(let i=Math.floor(-rx);i<=Math.ceil(rx);i++)if((i*i)/(rx*rx+0.01)+(j*j)/(ry*ry+0.01)<=1.05)p(Math.round(cx+i),Math.round(cy+j),c);},
+ line:(x0,y0,x1,y1,c,w=1)=>p=>{const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let i=0;i<=n;i++){const x=Math.round(x0+(x1-x0)*i/n),y=Math.round(y0+(y1-y0)*i/n);for(let u=0;u<w;u++)for(let v=0;v<w;v++)p(x+u,y+v,c);}},
+ poly:(pts,c)=>p=>{let y0=1e9,y1=-1e9;for(const q of pts){y0=Math.min(y0,q[1]);y1=Math.max(y1,q[1]);}
+  for(let y=Math.floor(y0);y<=Math.ceil(y1);y++){const xs=[];for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];if((a[1]<=y+0.5)!==(b[1]<=y+0.5))xs.push(a[0]+(y+0.5-a[1])/(b[1]-a[1])*(b[0]-a[0]));}
+   xs.sort((m,n)=>m-n);for(let i=0;i+1<xs.length;i+=2)for(let x=Math.round(xs[i]);x<Math.round(xs[i+1]);x++)p(x,y,c);}},
+ phase:(st,P)=>(((st.t||0)/P)%1+1)%1,
+ frame:(st,P,n=POSES)=>Math.floor(PX.phase(st,P)*n)};
+const BASE=['trup','sasiad','urzednik','komunista'];
+STYLES.push({id:'pixel',name:'Piksel 16-bit',desc:'Pixel art 16-bit: siatka 40 pikseli, 16 kolorów (i więcej), dithering i 4 klatki chodu.',
+ en:k=>BASE.includes(k)||!!PX.E[k],def:k=>!!PX.D[k],hero:()=>!!PX.H,
+ draw(k,x,y,h,st){if(PX.E[k]){G=new Map();PX.E[k](st);paint(x,y,h/ROWS,GROUND,PX.SH[k]||SHADOW_W);}else{build(k,st);render(x,y,h);}},
+ drawDef(k,x,by,sz,d,t){G=new Map();PX.D[k](d,t||0);paint(x,by,sz/36,0,null);},
+ drawHero(x,y,h,t){G=new Map();PX.H(t||0);paint(x,y,h/ROWS,GROUND,SHADOW_W);}});
 })();

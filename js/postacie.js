@@ -11,10 +11,15 @@ const SPEEDS=[[0,'⏸'],[0.25,'¼'],[0.5,'½'],[1,'1×'],[2,'2×']];
 const TABS=[['en','Chołota'],['def','Sprzęt'],['style','Style']];
 /* Próby stylów: każdy plik js/styles/<id>.js dopisuje się do STYLES i rysuje te postacie */
 const STYLE_ENEMIES=['trup','sasiad','urzednik','komunista'];
-const STYLE_FILES=['szkic','chibi','pixel','wycinanka','plakat','cien','glina','kreska'];
+const STYLE_FILES=['odnowa','odnowa_ludzie','odnowa_ludzie2','odnowa_stwory','odnowa_sprzet1','odnowa_sprzet2','odnowa_lekka','szkic','chibi','pixel','wycinanka','plakat','cien','glina','kreska','pixel_ludzie','pixel_ludzie2','pixel_stwory','pixel_sprzet1','pixel_sprzet2'];
 const STYLE_STATES={idzie:{walk:true},gryzie:{eat:true},stoi:{},mówi:{walk:true,talk:true},'bez transparentu':{walk:true,shield:0}};
+/* styl może rysować też całą obsadę: s.en / s.def / s.hero = lista kluczy albo funkcja k=>bool,
+   s.draw(k,x,y,h,st) chołota, s.drawDef(k,x,by,sz,d,t) sprzęt, s.drawHero(x,y,h,t) Zdzichu; czego nie ma, rysuje gra */
+const styleHas=(s,unit,k)=>{if(!s||s.id==='gra')return false;const f=s[unit];
+ return typeof f==='function'?!!f(k):Array.isArray(f)?f.includes(k):unit==='en'&&!!s.draw&&STYLE_ENEMIES.includes(k);};
+const curStyle=()=>STYLES.find(s=>s.id===UI.style);
 window.STYLES=[{id:'gra',name:'Obecna grafika',desc:'Tak jak teraz w grze, do porównania.',draw:(k,x,y,h,st)=>drawEnemyRaw(k,x,y,h,st)}];
-const UI=Object.assign({tab:'en',speed:1,bg:'trawa',box:false,frames:false,gameScale:false,q:'',st:{},big:null},JSON.parse(localStorage.getItem(STORE)||'{}'));
+const UI=Object.assign({style:'gra',tab:'en',speed:1,bg:'trawa',box:false,frames:false,gameScale:false,q:'',st:{},big:null},JSON.parse(localStorage.getItem(STORE)||'{}'));
 // ustawienia z adresu, np. postacie.html?tab=def&frames=1&box=1&q=pila&state=gryzie&speed=0&t=1.3
 for(const [k,v] of new URLSearchParams(location.search))UI[k]=v==='1'?true:v==='0'?false:k==='speed'?+v:v;
 const keep=()=>localStorage.setItem(STORE,JSON.stringify({...UI,state:undefined,t:undefined}));   // state, t: tylko z adresu
@@ -46,8 +51,8 @@ function enemyCard(k){
  return{k,unit:'en',name:d.name||k,desc:d.desc,states,
   stats:`❤ ${d.hp}`+(d.shield?` · 🪧 ${d.shield}`:'')+(d.helm?` · ⛑ ${d.helm}`:'')+` · 🏃 ${d.sp}`+(d.bite?` · 🦷 ${d.bite}`:'')+(d.undead?' · umarlak':'')+(d.boss?' · boss':'')+night(k,'newEn'),
   hr:enemyHR(k),
-  raw:(x,y,h,st,t)=>drawEnemyRaw(k,x,y,h,{...st,t}),
-  cached:(x,y,h,st,t)=>drawEnemyKey(k,x,y,h,{...st,t}),
+  raw:(x,y,h,st,t)=>{const s=curStyle();styleHas(s,'en',k)?s.draw(k,x,y,h,{...st,t}):drawEnemyRaw(k,x,y,h,{...st,t});},
+  cached:(x,y,h,st,t)=>{const s=curStyle();styleHas(s,'en',k)?s.draw(k,x,y,h,{...st,t}):drawEnemyKey(k,x,y,h,{...st,t});},
   cycle:st=>st.walk||st.eat?cycleOf(k,st):null};
 }
 function defCard(k){
@@ -56,13 +61,13 @@ function defCard(k){
  const dd=(st,t)=>st.mode==='ikona'?null:mockDef(k,t,st.mode);
  return{k,unit:'def',name:d.name,desc:d.desc,states,hr:0.95,
   stats:(d.tool||d.special?'za darmo':`${d.cost} l · ⏱ ${d.cd} s`)+(d.hp?` · ❤ ${d.hp}`:'')+(d.dmg?` · 💥 ${d.dmg}`:'')+(d.dps?` · 💥 ${d.dps}/s`:'')+(d.rate?` · co ${d.rate} s`:'')+night(k,'intro'),
-  raw:(x,y,sz,st,t)=>drawDefRaw(k,x,y,sz,dd(st,t),t),
-  cached:(x,y,sz,st,t)=>drawDef(k,x,y,sz,dd(st,t),t),
+  raw:(x,y,sz,st,t)=>{const s=curStyle();styleHas(s,'def',k)?s.drawDef(k,x,y,sz,dd(st,t),t):drawDefRaw(k,x,y,sz,dd(st,t),t);},
+  cached:(x,y,sz,st,t)=>{const s=curStyle();styleHas(s,'def',k)?s.drawDef(k,x,y,sz,dd(st,t),t):drawDef(k,x,y,sz,dd(st,t),t);},
   cycle:()=>({P:1,n:6})};
 }
 // Zdzichu nie jest ani wrogiem, ani sprzętem: rysowany jak człowiek, cykl polewania 2,8 s (poseDziad)
 const dziadCard={k:'dziad',unit:'en',name:'Zdzichu',desc:'Egzorcysta z beczką i wężem.',stats:'bohater',hr:0.88,states:{polewa:{}},
- raw:(x,y,h,st,t)=>drawHuman('dziad',x,y,h,{t}),cached:(x,y,h,st,t)=>drawHuman('dziad',x,y,h,{t}),cycle:()=>({P:2.8,n:8})};
+ raw:(x,y,h,st,t)=>{const s=curStyle();styleHas(s,'hero','dziad')?s.drawHero(x,y,h,t):drawHuman('dziad',x,y,h,{t});},cached:(x,y,h,st,t)=>dziadCard.raw(x,y,h,st,t),cycle:()=>({P:2.8,n:8})};
 
 const styleCard=s=>({k:s.id,name:s.name,desc:s.desc,stats:'styl: '+s.id,states:STYLE_STATES,s});
 /* karta stylu: 4 postacie obok siebie; błąd w stylu pokazany na karcie, nie psuje reszty */
@@ -123,6 +128,8 @@ function seg(sel,items,key,after){
 }
 function toolbar(){
  seg('#tabs',TABS,'tab',build);seg('#speeds',SPEEDS,'speed');
+ $('#style').innerHTML=STYLES.map(s=>`<option value="${s.id}"${s.id===UI.style?' selected':''}>${s.id==='gra'?'styl: gra':s.name}</option>`).join('');
+ $('#style').onchange=e=>{UI.style=e.target.value;keep();};
  $('#bg').innerHTML=Object.keys(BGS).map(b=>`<option${b===UI.bg?' selected':''}>${b}</option>`).join('');
  $('#bg').onchange=e=>{UI.bg=e.target.value;keep();};
  for(const id of ['box','frames','gameScale']){$('#'+id).checked=UI[id];$('#'+id).onchange=e=>{UI[id]=e.target.checked;keep();};}
