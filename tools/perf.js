@@ -11,13 +11,14 @@
      --noadapt       bez automatycznego obniżania rozdzielczości
      --shot plik.png zrzut planszy na koniec
      --prof          czas na klatkę w głównych funkcjach rysowania
+     --style odnowa  styl grafiki w grze (gra | odnowa | odnowa_lekka | pixel)
      --root dir      katalog gry (np. stara wersja do porównania)
    Wypisuje FPS, czasy klatek (p50/p95/p99/max), ile klatek > 33 ms (szarpnięcia),
    średni czas update/draw i ile razy bufor gotowych klatek musiał coś narysować od nowa. */
 const {chromium}=require('playwright');
 const http=require('http'),fs=require('fs'),path=require('path');
 const arg=(k,d)=>{const i=process.argv.indexOf('--'+k);return i<0?d:(process.argv[i+1]&&!process.argv[i+1].startsWith('--')?process.argv[i+1]:true);};
-const N=+arg('n',10),CPU=+arg('cpu',4),SEC=+arg('s',8),MIX=arg('mix','all'),[W,H]=String(arg('size','844x390')).split('x').map(Number),COLD=!!arg('cold',false),NOADAPT=!!arg('noadapt',false),PROF=!!arg('prof',false);
+const N=+arg('n',10),CPU=+arg('cpu',4),SEC=+arg('s',8),MIX=arg('mix','all'),[W,H]=String(arg('size','844x390')).split('x').map(Number),COLD=!!arg('cold',false),NOADAPT=!!arg('noadapt',false),PROF=!!arg('prof',false),STYLE=arg('style','gra');
 const ROOT=path.resolve(arg('root',path.join(__dirname,'..')));   // --root katalog: np. stara wersja gry do porównania
 const TYPES={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json'};
 const srv=http.createServer((q,r)=>{const f=path.join(ROOT,decodeURIComponent(q.url.split('?')[0])==='/'?'index.html':decodeURIComponent(q.url.split('?')[0]));
@@ -30,7 +31,8 @@ const srv=http.createServer((q,r)=>{const f=path.join(ROOT,decodeURIComponent(q.
  const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error')errs.push(m.text());});
  if(CPU>1){const cdp=await p.context().newCDPSession(p);await cdp.send('Emulation.setCPUThrottlingRate',{rate:CPU});}
  await p.goto(`http://localhost:${port}/index.html`);await p.waitForTimeout(800);
- const res=await p.evaluate(async({N,SEC,MIX,COLD,NOADAPT,PROF})=>{
+ const res=await p.evaluate(async({N,SEC,MIX,COLD,NOADAPT,PROF,STYLE})=>{
+  if(typeof save!=='undefined'){save.style=STYLE;if(typeof SPR!=='undefined'){SPR.clear();if(typeof LASTSPR!=='undefined')LASTSPR.clear();}}
   if(NOADAPT&&window.autoQuality)window.autoQuality=()=>{};
   const all=ALM_EN.filter(k=>k!=='palac'&&k!=='boss'),basic=['trup','sasiad','urzednik','komunista'];
   const pool=MIX==='all'?all:MIX==='basic'?basic:MIX.split(',');
@@ -63,9 +65,9 @@ const srv=http.createServer((q,r)=>{const f=path.join(ROOT,decodeURIComponent(q.
   return{level:li,enemies:G.ens.length,defs:G.defs.length,frames:M.frames.length,fps:M.frames.length/SEC,
    p50:q(M.frames,0.5),p95:q(M.frames,0.95),p99:q(M.frames,0.99),max:Math.max(...M.frames),jank33:M.frames.filter(v=>v>33.4).length,jank50:M.frames.filter(v=>v>50).length,
    updAvg:avg(M.upd),updMax:Math.max(0,...M.upd),drwAvg:avg(M.drw),drwMax:Math.max(0,...M.drw),drwP95:q(M.drw,0.95),missPerSec:M.miss/SEC,jsP95:q(M.js,0.95),jsMax:Math.max(0,...M.js),jsLong:M.js.filter(v=>v>16).length,skip:typeof SPRB!=='undefined'?SPRB.skip:0,qual:typeof QUAL!=='undefined'?QUAL:1,dpr:DPR,keys:M.keys,spikes:M.spk||[],sprMB:+([...SPR.values()].reduce((a,c)=>a+c.width*c.height*4,0)/1048576).toFixed(1),prof:Object.fromEntries(Object.entries(PT).map(([k,v])=>[k,+(v/(M.drw.length||1)).toFixed(2)])),spr:SPR.size,spr0};
- },{N,SEC,MIX,COLD,NOADAPT,PROF});
+ },{N,SEC,MIX,COLD,NOADAPT,PROF,STYLE});
  const f=v=>v.toFixed(1);
- console.log(`wrogów ${res.enemies}, sprzętu ${res.defs}, poziom ${res.level+1}, CPU ×${CPU}, ${W}×${H}@2${COLD?', zimny bufor':''}`);
+ console.log(`styl ${STYLE}, wrogów ${res.enemies}, sprzętu ${res.defs}, poziom ${res.level+1}, CPU ×${CPU}, ${W}×${H}@2${COLD?', zimny bufor':''}`);
  console.log(`FPS ${f(res.fps)} | klatka p50 ${f(res.p50)} p95 ${f(res.p95)} p99 ${f(res.p99)} max ${f(res.max)} ms | szarpnięć >33ms: ${res.jank33}, >50ms: ${res.jank50}`);
  console.log(`JS na klatkę (update+draw): p95 ${f(res.jsP95)} max ${f(res.jsMax)} ms, klatek z JS > 16 ms: ${res.jsLong}`);
  console.log(`update śr ${f(res.updAvg)} max ${f(res.updMax)} ms | draw śr ${f(res.drwAvg)} p95 ${f(res.drwP95)} max ${f(res.drwMax)} ms | bufor: ${f(res.missPerSec)} nowych klatek/s, rozmiar ${res.spr0}→${res.spr} (${res.sprMB} MB), pominiętych (stara klatka) ${res.skip} | rozdzielczość ×${res.qual} (DPR ${res.dpr})`);

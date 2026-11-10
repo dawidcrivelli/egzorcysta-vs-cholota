@@ -111,7 +111,7 @@ PIX.D.samowar=(d,t)=>{   // uproszczony: korpus, kranik, czajniczek
  L(rect(-5,-27,11,2,'#b8862a'));
  L(S(ell(0,-31,5,3,'#f2efe6'),rect(-4,-30,9,1,'#2a4fa0'),line(5,-32,7,-35,'#f2efe6'),rect(0,-35,1,1,'#2a4fa0')));
  smoke(7,-37,t,'rgba(240,240,240,',0.45,8);
- if(open){const k=d.kick/0.25;
+ if(false){const k=d.kick/0.25;   // strumień w grze rysuje efekt 'steam'
   L(p=>{for(let i=0;i<24;i++){const x=14+i,y=R(-7+i*i*0.014-Math.sin(i/24*Math.PI)*2);p(x,y,'#c8e6ff');if(i%3)p(x,y-1,'#ffffff');}},false);
   for(let i=0;i<3;i++){const q=((t*2.2+i/3)%1);puff(R(17+q*18),R(-10-q*6),1+q*1.6,'rgba(245,248,255,'+(0.6*(1-q)*k+0.2).toFixed(2)+')');}}
 };

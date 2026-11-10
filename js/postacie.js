@@ -18,6 +18,7 @@ const STYLE_STATES={idzie:{walk:true},gryzie:{eat:true},stoi:{},mówi:{walk:true
 const styleHas=(s,unit,k)=>{if(!s||s.id==='gra')return false;const f=s[unit];
  return typeof f==='function'?!!f(k):Array.isArray(f)?f.includes(k):unit==='en'&&!!s.draw&&STYLE_ENEMIES.includes(k);};
 const curStyle=()=>STYLES.find(s=>s.id===UI.style);
+window.POSTACIE=true;   // gra nie podmienia tu swojej grafiki (js/styl_gry.js)
 window.STYLES=[{id:'gra',name:'Obecna grafika',desc:'Tak jak teraz w grze, do porównania.',draw:(k,x,y,h,st)=>drawEnemyRaw(k,x,y,h,st)}];
 const UI=Object.assign({style:'gra',tab:'en',speed:1,bg:'trawa',box:false,frames:false,gameScale:false,q:'',st:{},big:null},JSON.parse(localStorage.getItem(STORE)||'{}'));
 // ustawienia z adresu, np. postacie.html?tab=def&frames=1&box=1&q=pila&state=gryzie&speed=0&t=1.3
@@ -158,7 +159,7 @@ function watch(files){
 
 fetch('index.html').then(r=>r.text()).then(html=>{
  const srcs=[...html.matchAll(/<script src="([^"]+)"/g)].map(m=>m[1]).filter(s=>!SKIP.test(s));
- srcs.push(...STYLE_FILES.map(f=>`js/styles/${f}.js`));   // brakujący plik stylu nie blokuje strony (onerror)
+ srcs.push(...STYLE_FILES.map(f=>`js/styles/${f}.js`).filter(f=>!srcs.includes(f)));   // style z gry już są w index.html   // brakujący plik stylu nie blokuje strony (onerror)
  srcs.forEach((s,i)=>{const el=document.createElement('script');el.src=s;el.async=false;if(i===srcs.length-1)el.onload=el.onerror=main;document.body.append(el);});
  if(LOCAL)watch(['postacie.html','css/postacie.css','js/postacie.js',...srcs]);
 });

@@ -50,10 +50,10 @@ D.kombajn=(d,t)=>{const rev=d&&d.rev,hp=d&&d.max?d.hp/d.max:1,b=rev?Math.abs(Mat
 function dot2(x,y,c){ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,0.9,1.2,0,0,7);ctx.fill();}
 
 /* Relikwia: puszka po landrynkach na koronkowej serwetce i taborecie, ze skrzydełkami, aureolą i boskim światłem */
-D.relikwia=(d,t)=>{const p=0.5+0.5*Math.sin(t*3),burst=d&&d.def&&d.t>(d.def.rate||2)-0.4?1-(d.def.rate-d.t)/0.4:0;
- const R=28+burst*20,g=ctx.createRadialGradient(0,-34,2,0,-34,R+10);g.addColorStop(0,'rgba(255,236,150,'+(0.5+p*0.25+burst*0.3)+')');g.addColorStop(1,'rgba(255,236,150,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,-34,R+10,0,7);ctx.fill();
+D.relikwia=(d,t)=>{const p=0.5+0.5*Math.sin(t*3),burst=d&&d.def&&d.t>(d.def.rate||2)-0.4&&d.t<=(d.def.rate||2)?clamp(1-((d.def.rate||2)-d.t)/0.4,0,1):0;
+ const R=26+burst*8,g=ctx.createRadialGradient(0,-34,2,0,-34,R+10);g.addColorStop(0,'rgba(255,236,150,'+(0.5+p*0.25+burst*0.3)+')');g.addColorStop(1,'rgba(255,236,150,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,-34,R+10,0,7);ctx.fill();
  ctx.save();ctx.translate(0,-36);ctx.rotate(t*0.4);for(let i=0;i<10;i++){ctx.rotate(PI/5);Pth([[-1.6,-14],[1.6,-14],[0,-24-p*4-burst*14]]);ctx.fillStyle='rgba(255,246,190,'+(0.35+p*0.3)+')';ctx.fill();}ctx.restore();
- if(burst>0){ctx.strokeStyle='rgba(255,240,170,'+(1-burst)+')';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,-20,20+burst*40,6+burst*10,0,0,7);ctx.stroke();}
+ if(burst>0){ctx.strokeStyle='rgba(255,240,170,'+(1-burst)+')';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,-20,20+burst*30,6+burst*6,0,0,7);ctx.stroke();}
  shadow(0,22,3.6);
  // taboret
  for(const x of [-14,12])limb([x,-14],[x+(x<0?-3:3),0],4,3.4,'#7a5634');
