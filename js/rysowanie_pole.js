@@ -51,6 +51,9 @@ function drawBubble(e){
 }
 function drawProj(){
  for(const p of G.proj){
+  {let x,y,rot;if(p.k==='boot'||p.k==='soap'){x=PX(p.x);y=FY(p.r)-L.rowH*0.42;rot=p.rot;}   // styl gry może narysować pocisk po swojemu
+   else{const k=p.t/p.T;x=PX(lerp(p.x0,p.x1,k));y=FY(p.r)-L.rowH*0.45-Math.sin(k*Math.PI)*L.rowH*(p.k==='ball'?1.5:0.9);rot=k*(p.k==='holy'?8:9);}
+   if(styleProj(p.k,x,y,rot,p.v))continue;}
   if(p.k==='boot')boot(PX(p.x),FY(p.r)-L.rowH*0.42,L.rowH/70,p.rot);
   else if(p.k==='soap'){const x=PX(p.x),y=FY(p.r)-L.rowH*0.42,sc=L.rowH/74;ctx.save();ctx.translate(x,y);ctx.rotate(p.rot);ctx.scale(sc,sc);ctx.fillStyle='rgba(215,240,230,.92)';rrect(-5,-6,10,12,3);ctx.fill();ctx.strokeStyle=OL;ctx.lineWidth=1.4;ctx.stroke();ctx.fillStyle='#6a9a2a';ctx.fillRect(-3.4,-3,2.2,7);ctx.fillRect(0.6,-4,2.2,8);fr('#c9a24a',-5.4,-8.4,10.8,3);ctx.restore();}
   else{const k=p.t/p.T,x=PX(lerp(p.x0,p.x1,k)),y=FY(p.r)-L.rowH*0.45-Math.sin(k*Math.PI)*L.rowH*(p.k==='ball'?1.5:0.9);

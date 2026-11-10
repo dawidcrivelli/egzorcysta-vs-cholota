@@ -139,6 +139,24 @@ const Z_T=["....SStt......","..tttRtttTT...",".tttRYRttTTT6.",".ttttRtttTTT6.","
  "ttttRtttttttt6","TTTTRTTTTTTTT6","ttttRYRttttt66","ttttRtttttttt6","NNNNNNmNNNNNN6","ttttttttttttt6",".tttttttttttt6",".tttttttttttt."];
 const Z_L={pants:'#3c3a34',pantsS:'#2a2924',shoe:'#1c1c1a',boot:5,felt:'#9a948a',shoe2:'#121210'};
 const BARREL=[".JJJJJJJJJ.","J000000000J","kkkkkkkkkkk","j0000000000","jjj0W0W0000","jjj00W00000","jjj0W0W0000","j0000000000","kkkkkkkkkkk","j0000000000","j0000000000","kkkkkkkkkkk",".J0000000J."];
+/* Zdzichu w scenach gry: marsz w intro i do Ursusa (walk), na siedzeniu Ursusa (seat), przestraszony przy przegranej (scared) */
+PIX.HP=(t,mode)=>{
+ if(mode!=='walk'&&mode!=='seat'&&mode!=='scared'){PIX.H(t);return;}
+ const walk=mode==='walk',seat=!walk,f=walk?Math.floor((((t*9)/(2*Math.PI))%1+1)%1*4):0,w=walk?WALK[f]:IDLE,by=(walk?w.bob:0)+(seat?5:0);
+ layer(st2(BARREL,5,11+by));layer(rect(8,9+by,4,2,'#8a8e94'));
+ if(mode==='scared'){arm(1,15+by,6,4+by,'t','t','S');}else arm(1,15+by,1-(walk?[1,0,-1,0][f]:0),24+by,'t','t','s');
+ if(walk){layer(leg(0,w.b,w.bl,Z_L,true));layer(leg(-2,-2+w.a,w.al,Z_L,false));}
+ else for(const [dx,far] of [[2,true],[0,false]]){const pc=far?Z_L.pantsS:Z_L.pants,sc=far?Z_L.shoe2:Z_L.shoe,hy=PIX.HIP+5;   // uda poziomo do przodu, łydki w dół
+  layer(S2(rect(-9+dx,hy,11,3,pc),rect(-9+dx,hy,3,PIX.GROUND-hy-2,pc),rect(-9+dx,PIX.GROUND-7,3,5,sc),rect(-13+dx,PIX.GROUND-2,6,2,sc)));}
+ layer(st2(Z_T,-7,13+by));layer(st2(Z_H,-8,by));layer(st2(Z_BEARD,-9,12+by));
+ const H=mode==='scared'?[-6,3+by]:walk?[-6,20+by]:[-9,19+by];
+ // kropidło: przy marszu na ramieniu, na Ursusie oparte, przy strachu w górze
+ const ang=mode==='scared'?-1.9:walk?-2.2:-0.6,dx=Math.cos(ang),dy=Math.sin(ang),bx=Math.round(H[0]+dx*9),bY=Math.round(H[1]+dy*9);
+ layer(line(H[0],H[1],bx,bY,'#7a5232',1));layer(ell(bx,bY,2,2,'#c9ced4'));layer(p=>{p(bx,bY,'#55585c');},false);
+ arm(-1,15+by,H[0],H[1],'t','T','S');
+ if(mode==='scared'){const q=Math.sin(t*20)>0?1:0;layer(p=>{p(-12,1+q,'#ffffff');p(-12,2+q,'#ffffff');p(6,0+q,'#ffffff');p(6,1+q,'#ffffff');},false);}   // pot ze strachu
+};
+const S2=(...f)=>p=>f.forEach(g=>g(p));
 PIX.H=t=>{const c=(t%2.8)/2.8,bob=Math.sin(t*2.2)>0.5?-1:0,by=bob;
  // ręka z kropidłem: zamach do góry (0..0.3), szybki strzał (0.3..0.4), powrót
  const ph=c<0.3?0:c<0.4?1:c<0.75?2:3;

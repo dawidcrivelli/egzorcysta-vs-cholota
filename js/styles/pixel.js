@@ -140,5 +140,9 @@ STYLES.push({id:'pixel',name:'Piksel 16-bit',desc:'Pixel art 16-bit: siatka 40 p
  en:k=>BASE.includes(k)||!!PX.E[k],def:k=>!!PX.D[k],hero:()=>!!PX.H,
  draw(k,x,y,h,st){if(PX.E[k]){G=new Map();PX.E[k](st);paint(x,y,h/ROWS,GROUND,PX.SH[k]||SHADOW_W);}else{build(k,st);render(x,y,h);}},
  drawDef(k,x,by,sz,d,t){G=new Map();PX.D[k](d,t||0);paint(x,by,sz/36,0,null);},
- drawHero(x,y,h,t){G=new Map();PX.H(t||0);paint(x,y,h/ROWS,GROUND,SHADOW_W);}});
+ drawHero(x,y,h,t){G=new Map();PX.H(t||0);paint(x,y,h/ROWS,GROUND,SHADOW_W);},
+ // Zdzichu w scenach gry (st.mode: walk | seat | scared | idle), st.flip = twarzą w prawo
+ drawHeroPose(x,y,h,st){if(!PX.HP)return false;G=new Map();PX.HP(st.t||0,st.mode);ctx.save();ctx.translate(x,y);if(st.flip)ctx.scale(-1,1);paint(0,0,h/ROWS,GROUND,st.mode==='seat'||st.mode==='scared'?null:SHADOW_W);ctx.restore();return true;},
+ drawProj(...a){return PX.PROJ?PX.PROJ(...a):false;}});
+PX.paint=paint;
 })();
