@@ -18,6 +18,7 @@ function kill(e){
  const x=PX(e.x),y=FY(e.row);
  burst(x,y-L.rowH*0.4,ecolor(e.k),e.d.boss?44:12,e.d.boss?170:90);
  G.fx.push({k:'puff',x,y:y-L.rowH*0.3,t:0,T:0.5,r:e.d.boss?60:20,c:'210,210,200'});
+ if(e.k==='trup'&&G.tombNight&&!G.evil&&!DEMO&&!e.fromTomb)tombDrop(e);
  if(e.k==='burak'){spawn('buraczek',e.row,e.x+0.18);spawn('buraczek',e.row,e.x-0.12);}
  if(e.k==='nysa'){spawn('milicjant',e.row,e.x);fxText(x,y-L.rowH,'Kierowca wysiada!','#bcd0ff');}
  if(e.k==='boss'){banner('POMNIK OBALONY!');G.shake=0.6;}

@@ -1,6 +1,6 @@
 /* ---------- dane: chołota ---------- */
 const EN={
- trup:{name:'Trup z parafialnego',hp:200,sp:0.22,bite:40,undead:true,desc:'Wstał, bo ktoś rozkopał cmentarz. Wolny, głupi i wiecznie głodny.',say:['Mózgiii…','Bimbruuu…']},
+ trup:{name:'Trup z parafialnego',hp:200,sp:0.22,bite:40,undead:true,desc:'Wstał, bo ktoś rozkopał cmentarz. Wolny, głupi i wiecznie głodny. W noce z księżycem zostawia grób: wykop go łopatą, zanim wstanie z niego następny.',say:['Mózgiii…','Bimbruuu…']},
  urzednik:{name:'Urzędnik z gminy',hp:300,sp:0.16,bite:30,desc:'Wolny, ale gdy dorwie twój sprzęt, przybija pieczątkę „ZAMKNIĘTE” i sprzęt staje na 6 sekund.',say:['Brak pieczątki!','Proszę przyjść jutro.','Okienko obok.']},
  sasiad:{name:'Zazdrosny sąsiad',hp:220,sp:0.26,bite:30,desc:'Słabeusz, ale gdy podgryza twój sprzęt, podkrada ci samogon. Zawsze tak robił.',say:['Pożycz flaszkę!','Jak ty to pędzisz?']},
  milicjant:{name:'Milicjant',hp:320,sp:0.3,bite:50,desc:'Szybszy od trupa i mocniej bije pałką. Prosi o dowód, ale nie czeka na odpowiedź.',say:['Dowód osobisty!','Obywatelu!']},
