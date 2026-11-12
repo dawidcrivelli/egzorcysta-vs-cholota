@@ -91,14 +91,15 @@ function drawModal(m){
 }
 function panel(w,h){const x=(LW-w)/2,y=(LH-h)/2;ctx.fillStyle='rgba(10,6,2,.6)';ctx.fillRect(0,0,LW,LH);ctx.fillStyle='rgba(0,0,0,.4)';rrect(x+4,y+6,w,h,14);ctx.fill();ctx.fillStyle='#f1e2bd';rrect(x,y,w,h,14);ctx.fill();ctx.lineWidth=4;ctx.strokeStyle='#5a3a1e';ctx.stroke();return{x,y};}
 function drawPause(){
- const p=panel(320,346);txt('Pauza',LW/2,p.y+40,26,900,'#2a1608');
+ const p=panel(320,306);txt('Pauza',LW/2,p.y+40,26,900,'#2a1608');
  button(LW/2-110,p.y+56,107,40,'Graj dalej',()=>{paused=false;},{size:14});
  button(LW/2+3,p.y+56,107,40,'Almanach',()=>openAlm('play'),{size:14,bg:'#cdb48a'});
  button(LW/2-110,p.y+108,107,36,save.mus?'Muzyka: tak':'Muzyka: nie',()=>toggleMus(),{size:12,on:save.mus});
  button(LW/2+3,p.y+108,107,36,save.sfx?'Dźwięki: tak':'Dźwięki: nie',()=>toggleSfx(),{size:12,on:save.sfx});
  button(LW/2-110,p.y+156,220,40,'Zacznij noc od nowa',()=>{newGame(G.li,G.load);},{size:14});
  button(LW/2-110,p.y+206,220,40,'Wybór nocy',()=>{paused=false;scene='levels';},{size:14,bg:'#cdb48a'});
- button(LW/2-110,p.y+254,220,36,'Grafika: '+styleName(),()=>nextGameStyle(),{size:13,bg:'#cdb48a'});
+ button(LW/2-110,p.y+254,107,36,'Grafika: '+styleName(),()=>nextGameStyle(),{size:11,bg:'#cdb48a'});
+ button(LW/2+3,p.y+254,107,36,save.lowres?'Ostrość: oszczędna':'Ostrość: wysoka',()=>{save.lowres=!save.lowres;persist();resize();LASTSPR.clear();if(G&&scene==='play')queueWarm();},{size:11,bg:'#cdb48a'});
 }
 function drawLoseScene(t){
  const fl=LH*0.8;
