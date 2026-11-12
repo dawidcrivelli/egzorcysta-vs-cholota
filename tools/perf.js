@@ -8,7 +8,6 @@
      --size 844x390  okno (telefon poziomo), DPR 2
      --cold          bez rozgrzewki bufora klatek (jak pierwsze spotkanie z wrogami)
      --dpr 2         gęstość pikseli ekranu
-     --noadapt       bez automatycznego obniżania rozdzielczości
      --shot plik.png zrzut planszy na koniec
      --prof          czas na klatkę w głównych funkcjach rysowania
      --style odnowa  styl grafiki w grze (gra | odnowa | odnowa_lekka | pixel)
@@ -32,8 +31,7 @@ const srv=http.createServer((q,r)=>{const f=path.join(ROOT,decodeURIComponent(q.
  if(CPU>1){const cdp=await p.context().newCDPSession(p);await cdp.send('Emulation.setCPUThrottlingRate',{rate:CPU});}
  await p.goto(`http://localhost:${port}/index.html`);await p.waitForTimeout(800);
  const res=await p.evaluate(async({N,SEC,MIX,COLD,NOADAPT,PROF,STYLE})=>{
-  if(typeof save!=='undefined'){save.style=STYLE;if(typeof SPR!=='undefined'){SPR.clear();if(typeof LASTSPR!=='undefined')LASTSPR.clear();}}
-  if(NOADAPT&&window.autoQuality)window.autoQuality=()=>{};
+  if(typeof save!=='undefined'){save.style=STYLE;if(typeof resize==='function')resize();if(typeof SPR!=='undefined'){SPR.clear();if(typeof LASTSPR!=='undefined')LASTSPR.clear();}}
   const all=ALM_EN.filter(k=>k!=='palac'&&k!=='boss'),basic=['trup','sasiad','urzednik','komunista'];
   const pool=MIX==='all'?all:MIX==='basic'?basic:MIX.split(',');
   // poziom z największą liczbą sprzętu, bez fal; wszystko odblokowane
@@ -64,13 +62,13 @@ const srv=http.createServer((q,r)=>{const f=path.join(ROOT,decodeURIComponent(q.
   const q=(a,x)=>{const s=[...a].sort((m,n)=>m-n);return s.length?s[Math.min(s.length-1,Math.floor(s.length*x))]:0;},avg=a=>a.reduce((s,v)=>s+v,0)/(a.length||1);
   return{level:li,enemies:G.ens.length,defs:G.defs.length,frames:M.frames.length,fps:M.frames.length/SEC,
    p50:q(M.frames,0.5),p95:q(M.frames,0.95),p99:q(M.frames,0.99),max:Math.max(...M.frames),jank33:M.frames.filter(v=>v>33.4).length,jank50:M.frames.filter(v=>v>50).length,
-   updAvg:avg(M.upd),updMax:Math.max(0,...M.upd),drwAvg:avg(M.drw),drwMax:Math.max(0,...M.drw),drwP95:q(M.drw,0.95),missPerSec:M.miss/SEC,jsP95:q(M.js,0.95),jsMax:Math.max(0,...M.js),jsLong:M.js.filter(v=>v>16).length,skip:typeof SPRB!=='undefined'?SPRB.skip:0,qual:typeof QUAL!=='undefined'?QUAL:1,dpr:DPR,keys:M.keys,spikes:M.spk||[],sprMB:+([...SPR.values()].reduce((a,c)=>a+c.width*c.height*4,0)/1048576).toFixed(1),prof:Object.fromEntries(Object.entries(PT).map(([k,v])=>[k,+(v/(M.drw.length||1)).toFixed(2)])),spr:SPR.size,spr0};
+   updAvg:avg(M.upd),updMax:Math.max(0,...M.upd),drwAvg:avg(M.drw),drwMax:Math.max(0,...M.drw),drwP95:q(M.drw,0.95),missPerSec:M.miss/SEC,jsP95:q(M.js,0.95),jsMax:Math.max(0,...M.js),jsLong:M.js.filter(v=>v>16).length,skip:typeof SPRB!=='undefined'?SPRB.skip:0,dpr:DPR,keys:M.keys,spikes:M.spk||[],sprMB:+([...SPR.values()].reduce((a,c)=>a+c.width*c.height*4,0)/1048576).toFixed(1),prof:Object.fromEntries(Object.entries(PT).map(([k,v])=>[k,+(v/(M.drw.length||1)).toFixed(2)])),spr:SPR.size,spr0};
  },{N,SEC,MIX,COLD,NOADAPT,PROF,STYLE});
  const f=v=>v.toFixed(1);
  console.log(`styl ${STYLE}, wrogów ${res.enemies}, sprzętu ${res.defs}, poziom ${res.level+1}, CPU ×${CPU}, ${W}×${H}@2${COLD?', zimny bufor':''}`);
  console.log(`FPS ${f(res.fps)} | klatka p50 ${f(res.p50)} p95 ${f(res.p95)} p99 ${f(res.p99)} max ${f(res.max)} ms | szarpnięć >33ms: ${res.jank33}, >50ms: ${res.jank50}`);
  console.log(`JS na klatkę (update+draw): p95 ${f(res.jsP95)} max ${f(res.jsMax)} ms, klatek z JS > 16 ms: ${res.jsLong}`);
- console.log(`update śr ${f(res.updAvg)} max ${f(res.updMax)} ms | draw śr ${f(res.drwAvg)} p95 ${f(res.drwP95)} max ${f(res.drwMax)} ms | bufor: ${f(res.missPerSec)} nowych klatek/s, rozmiar ${res.spr0}→${res.spr} (${res.sprMB} MB), pominiętych (stara klatka) ${res.skip} | rozdzielczość ×${res.qual} (DPR ${res.dpr})`);
+ console.log(`update śr ${f(res.updAvg)} max ${f(res.updMax)} ms | draw śr ${f(res.drwAvg)} p95 ${f(res.drwP95)} max ${f(res.drwMax)} ms | bufor: ${f(res.missPerSec)} nowych klatek/s, rozmiar ${res.spr0}→${res.spr} (${res.sprMB} MB), pominiętych (stara klatka) ${res.skip} | DPR ${res.dpr}`);
  if(arg('shot',false)){await p.evaluate(()=>{paused=false;});await p.screenshot({path:String(arg('shot'))});console.log('zrzut:',arg('shot'));}
  if(arg('spikes',false))console.log('skoki JS > 30 ms:',JSON.stringify(res.spikes));
  if(PROF)console.log('ms na klatkę:',JSON.stringify(res.prof));

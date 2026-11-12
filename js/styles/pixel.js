@@ -115,7 +115,8 @@ function build(k,st){
 
 /* rysuje siatkę G: px = rozmiar piksela, ground = wiersz ziemi; kolor = litera z PAL, cyfra z DITH albo wprost '#hex'/'rgba(…)' */
 function paint(x,y,px,ground,shadow){
- const X=v=>Math.round(x+v*px),Y=v=>Math.round(y+(v-ground)*px);
+ // krawędzie pikseli na siatce pikseli urządzenia (bieżąca transformacja), żeby nic się nie rozmywało
+ const m=ctx.getTransform(),ka=m.a||1,kd=m.d||1,X=v=>(Math.round(ka*(x+v*px)+m.e)-m.e)/ka,Y=v=>(Math.round(kd*(y+(v-ground)*px)+m.f)-m.f)/kd;
  if(shadow){ctx.fillStyle=SHADOW;shadow.forEach((w,i)=>ctx.fillRect(X(-w-1),Y(ground-1+i),X(w)-X(-w-1),Y(ground+i)-Y(ground-1+i)));}
  for(const [k,c] of G){const cx=k%256-128,cy=Math.floor(k/256)-64,d=DITH[c];
   ctx.fillStyle=d?PAL[d[(cx+cy)&1]]:PAL[c]||c;ctx.fillRect(X(cx),Y(cy),X(cx+1)-X(cx),Y(cy+1)-Y(cy));}

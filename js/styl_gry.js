@@ -10,7 +10,7 @@ function styleName(){const g=GAME_STYLES.find(x=>x[0]===(save.style||'gra'));ret
 /* następny styl z listy; czyści bufor klatek, bo klucze klatek nie zawierają stylu */
 function nextGameStyle(){
  const i=GAME_STYLES.findIndex(x=>x[0]===(save.style||'gra'));save.style=GAME_STYLES[(i+1)%GAME_STYLES.length][0];persist();
- SPR.clear();LASTSPR.clear();if(G&&scene==='play')queueWarm();
+ resize();LASTSPR.clear();if(G&&scene==='play')queueWarm();   // resize: inna gęstość pikseli dla pixel artu, czyści bufor
 }
 {
  const enemyRaw0=drawEnemyRaw,defRaw0=drawDefRaw,ursus0=ursus;

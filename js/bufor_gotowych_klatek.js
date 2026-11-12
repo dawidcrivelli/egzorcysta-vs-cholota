@@ -26,7 +26,13 @@ function trim(c,g,sc){
  t.tx=x0/sc;t.ty=y0/sc;t.tw=tw/sc;t.th=th/sc;return t;
 }
 /* rysuje klatkę z bufora w pudełku (x,y = lewy górny róg, bw×bh); przycięta trafia w swoje miejsce */
-function blit(c,x,y,bw,bh){if(c.tw!=null){if(c.tw)ctx.drawImage(c,x+c.tx,y+c.ty,c.tw,c.th);}else ctx.drawImage(c,x,y,bw,bh);}
+/* rysuje klatkę z bufora 1:1 w pikselach ekranu: lewy górny róg dociągnięty do siatki pikseli, rozmiar = rozmiar płótna klatki.
+   Bez tego przeglądarka przesuwa klatkę o ułamek piksela i ją rozmywa (najbardziej widać na pixel arcie). */
+function blit(c,x,y,bw,bh){
+ if(c.tw===0)return;const k=S*DPR,px=c.tw!=null?x+c.tx:x,py=c.tw!=null?y+c.ty:y;
+ if(Math.abs(c.width-(c.tw!=null?c.tw:bw)*k)>1.5){ctx.drawImage(c,px,py,c.tw!=null?c.tw:bw,c.tw!=null?c.th:bh);return;}   // klatka z innej rozdzielczości (zapas): skaluj
+ ctx.drawImage(c,Math.round(px*k)/k,Math.round(py*k)/k,c.width/k,c.height/k);
+}
 const NONH_P={palac:Math.PI*2/3,swinia:Math.PI*2/12,kura:Math.PI*2/8,burak:Math.PI*2/9,buraczek:Math.PI*2/9,barszcz:Math.PI*2/6,krowa:Math.PI*2/7,nysa:Math.PI*2/7};
 /* cykl animacji: okres P i liczba klatek n w buforze (gra, rozgrzewka bufora, przegląd postaci) */
 function cycleOf(k,st){
