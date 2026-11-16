@@ -16,8 +16,8 @@ function update(dt){
  g.sky-=dt;if(g.sky<=0){g.sky=rr(8,11);g.picks.push({x:rr(PX(0.6),PX(8.4)),y:L.top+4,gy:rr(L.top+L.rowH*0.6,LH-30),vy:34,val:25,life:9,st:'fall'});}
  for(const k in g.cd)if(g.cd[k]>0)g.cd[k]=Math.max(0,g.cd[k]-dt);
  if(g.evil&&!DEMO){
-  g.botSam+=dt*EVB.botInc*(1+g.li*0.04)*25/Math.max(5,9-g.li*0.25);for(const k in g.bcd)if(g.bcd[k]>0)g.bcd[k]-=dt;
-  g.botT-=dt;if(g.botT<=0){g.botT=EVB.react*Math.max(0.6,1.2-g.li*0.03);farmerStep();}
+  g.botSam+=dt*EVB.botInc*(EVZ()?EVE.botInc:1)*(1+g.li*0.04)*25/Math.max(5,9-g.li*0.25);for(const k in g.bcd)if(g.bcd[k]>0)g.bcd[k]-=dt;
+  g.botT-=dt;if(g.botT<=0){g.botT=EVB.react*(EVZ()?EVE.react:1)*Math.max(0.6,1.2-g.li*0.03);farmerStep();}
   for(const gr of g.graves){gr.t-=dt;if(gr.t<=0){gr.t=10;g.picks.push({soul:true,x:PX(gr.c+0.5),y:FY(gr.r)-L.rowH*0.55,gy:FY(gr.r)-L.rowH*0.25,vy:-40,vx:rr(-10,10),val:25,life:7,st:'pop'});}}
   if(g.t>=g.dawn&&!g.over){evilLose();return;}
  }
@@ -192,7 +192,8 @@ function tryPlace(r,c){
 function makeDef(k,r,c){
  const def=DEF[k];
  if(k==='plug'){G.plows.push({r,x:c+0.2,hit:[]});sfx('plow');fxText(PX(c+0.5),FY(r)-L.rowH*0.9,'WIO!','#ffe9a0');return null;}
- const d={k,def,r,c,hp:def.hp||1,max:def.hp||1,t:k==='bimbrownia'?6:0.3,stamp:0,armT:def.arm||0,armed:false,reload:0,uses:def.uses||0,life:def.life||0,fuse:0.7,anim:0,kick:0,dead:false,hitT:0,rev:false};
+ const hp=(def.hp||1)*(EVZ()?EVE.defHp:1);
+ const d={k,def,r,c,hp,max:hp,t:k==='bimbrownia'?6:0.3,stamp:0,armT:def.arm||0,armed:false,reload:0,uses:def.uses||0,life:def.life||0,fuse:0.7,anim:0,kick:0,dead:false,hitT:0,rev:false};
  G.defs.push(d);G.grid[r][c]=d;
  burst(PX(c+0.5),FY(r)-4,'#a08050',8,60);return d;
 }

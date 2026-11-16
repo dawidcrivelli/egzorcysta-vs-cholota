@@ -1,6 +1,7 @@
 /* ---------- obrażenia ---------- */
 function hurt(e,dmg,kind){
  if(e.dead)return;const d=e.d;
+ if(EVZ())dmg*=EVE.dmg;   // łatwy tryb chołoty: sprzęt farmera bije słabiej
  if(kind==='holy'&&d.undead)dmg*=3;
  if(kind==='fire'&&d.burn)dmg*=2;
  if((kind==='explode'||kind==='fire')&&dmg>=300){if(e.shield>0)dropFx(e,'sign');if(e.helm>0)dropFx(e,'helm');e.shield=0;e.helm=0;}

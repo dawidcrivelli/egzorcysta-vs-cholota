@@ -1,25 +1,41 @@
 #!/usr/bin/env node
 /* Prosty bot, który gra noce bez rysowania (szybciej niż czas rzeczywisty), żeby sprawdzić, czy da się je przejść.
    Uruchom: node tools/bot.js [--levels 6-10] [--runs 3] [--notombs] [--noshovel]
+            node tools/bot.js --evil [--easy] [--slow 3] [--levels 1-6]   tryb chołoty: bot gra chołotą, działa co --slow s (dziecko: 3)
    Bot: zbiera samogon, stawia bimbrownie w kolumnie 0, potem w rzędzie z największym zagrożeniem najlepszy dostępny
    sprzęt strzelający (kolumny 1–3) i ściany (kolumna 5); groby wykopuje łopatą, chyba że --noshovel.
    Wypisuje dla każdej nocy: wygrane/rozgrywki, ile grobów powstało, ile trupów z nich wstało, ile wykopano. */
 const {chromium}=require('playwright');
 const http=require('http'),fs=require('fs'),path=require('path');
 const arg=(k,d)=>{const i=process.argv.indexOf('--'+k);return i<0?d:(process.argv[i+1]&&!process.argv[i+1].startsWith('--')?process.argv[i+1]:true);};
-const [L0,L1]=String(arg('levels','6-10')).split('-').map(Number),RUNS=+arg('runs',3),NOTOMBS=!!arg('notombs',false),NOSHOVEL=!!arg('noshovel',false);
+const [L0,L1]=String(arg('levels','6-10')).split('-').map(Number),RUNS=+arg('runs',3),NOTOMBS=!!arg('notombs',false),NOSHOVEL=!!arg('noshovel',false),EVIL=!!arg('evil',false),EASY=!!arg('easy',false),SLOW=+arg('slow',0.5);
 const ROOT=path.join(__dirname,'..'),TYPES={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json'};
 const srv=http.createServer((q,r)=>{const u=decodeURIComponent(q.url.split('?')[0]),f=path.join(ROOT,u==='/'?'index.html':u);
  fs.readFile(f,(e,b)=>{if(e){r.writeHead(404);r.end();return;}r.writeHead(200,{'Content-Type':TYPES[path.extname(f)]||'application/octet-stream'});r.end(b);});});
 (async()=>{
  await new Promise(ok=>srv.listen(0,ok));const b=await chromium.launch(),p=await b.newPage({viewport:{width:844,height:390}});
  const errs=[];p.on('pageerror',e=>errs.push(e.message));
- await p.addInitScript(()=>{localStorage.setItem('evc_save_v1',JSON.stringify({unlocked:16,v:4,mus:false,sfx:false}));});
+ await p.addInitScript(e=>{localStorage.setItem('evc_save_v1',JSON.stringify({unlocked:16,evilUnlocked:16,v:4,mus:false,sfx:false,diff:e?'easy':'normal'}));},EASY);
  await p.goto(`http://localhost:${srv.address().port}/index.html`);await p.waitForTimeout(500);
- const res=await p.evaluate(({L0,L1,RUNS,NOTOMBS,NOSHOVEL})=>{
+ const res=await p.evaluate(({L0,L1,RUNS,NOTOMBS,NOSHOVEL,EVIL,SLOW})=>{
   window.requestAnimationFrame=()=>0;   // pętla gry stoi, symulujemy sami
   const SHOOT_PREF=['armata','samowar','woda','resztki','pralka','gumofilce'],WALL=['szafa','rubin','kombajn'];
   const out=[];
+  if(EVIL){   // bot chołoty: zbiera duszyczki, stawia 3 groby, wysyła najmocniejszą stać go jednostkę w rząd z najsłabszą obroną
+   for(let li=L0-1;li<=L1-1;li++){const row={night:li+1,name:LEVELS[li].name,wins:0,runs:0,tombs:0,rose:0,lostAt:[]};
+    for(let run=0;run<RUNS;run++){MODE='evil';newGame(li,evilUnits(li));G.modal=[];paused=false;let botT=0;const dt=1/30;
+     while(!G.over&&scene==='play'&&G.t<600){update(dt);botT-=dt;if(botT>0)continue;botT=SLOW;
+      for(const pk of G.picks)if(pk.st!=='fly')collect(pk);
+      const can=k=>G.cd[k]<=0&&G.sam>=costOf(k);
+      if(G.graves.length<3&&can('grob')){G.sel='grob';const r=G.graves.length%5*2%5,c=8-(G.graves.length%2);evilTap((r+1)%5,c);continue;}
+      const def=[0,0,0,0,0];for(const d of G.defs)if(!d.dead)def[d.r]+=(d.hp||0)+(SHOOT.includes(d.k)?200:0);
+      const r=[0,1,2,3,4].sort((a,b)=>def[a]-def[b])[0];
+      const units=G.cards.filter(k=>UNIT[k]&&can(k)).sort((a,b)=>costOf(b)-costOf(a));
+      if(units.length){G.sel=units[0];evilTap(r,8);}}
+     row.runs++;if(scene==='win')row.wins++;else row.lostAt.push(Math.round(G.t));scene='title';}
+    out.push(row);}
+   return out;
+  }
   for(let li=L0-1;li<=L1-1;li++){const row={night:li+1,name:LEVELS[li].name,wins:0,runs:0,tombs:0,rose:0,dug:0,lostAt:[]};
    for(let run=0;run<RUNS;run++){
     MODE='good';newGame(li);G.modal=[];paused=false;G.intro=null;if(NOTOMBS)G.tombNight=false;
@@ -44,8 +60,8 @@ const srv=http.createServer((q,r)=>{const u=decodeURIComponent(q.url.split('?')[
     scene='title';
    }
    out.push(row);}
-  return out;},{L0,L1,RUNS,NOTOMBS,NOSHOVEL});
- console.log(`groby: ${NOTOMBS?'wyłączone':'włączone'}${NOSHOVEL?', bot nie kopie':''}`);
+  return out;},{L0,L1,RUNS,NOTOMBS,NOSHOVEL,EVIL,SLOW});
+ console.log(EVIL?`tryb chołoty, ${EASY?'łatwy':'normalny'}, bot działa co ${SLOW} s`:`groby: ${NOTOMBS?'wyłączone':'włączone'}${NOSHOVEL?', bot nie kopie':''}`);
  for(const r of res)console.log(`noc ${r.night} ${r.name.padEnd(22)} wygrane ${r.wins}/${r.runs} | grobów ${r.tombs}, wstało ${r.rose}${r.lostAt.length?' | przegrane w s: '+r.lostAt.join(','):''}`);
  if(errs.length)console.log('BŁĘDY:\n'+[...new Set(errs)].join('\n'));
  await b.close();srv.close();
