@@ -34,7 +34,7 @@ function newGame(li,load){
 }
 function evilSetup(li,load){
  const lv=LEVELS[li];G.evil=true;G.tombNight=false;G.endless=false;G.waves=[];G.lastT=1;G.intro=null;G.sky=1e9;
- G.sam=150;G.botSam=100+li*20;G.botT=1.5;G.bcd={};G.dawn=195+li*5;G.graves=[];G.farmBimb=EVB.bimbMax+Math.min(2,Math.floor(li/5));
+ const ez=EZ();G.sam=ez?EVE.sam:150;G.botSam=(100+li*20)*(ez?EVE.botInc:1);G.botT=1.5;G.bcd={};G.dawn=Math.round((195+li*5)*(ez?EVE.dawn:1));G.graves=[];G.farmBimb=EVB.bimbMax+Math.min(2,Math.floor(li/5));
  G.cards=['grob'].concat(evilUnits(li).filter(k=>load.includes(k))).concat(['lopata']);
  G.cd={};for(const k of G.cards)G.cd[k]=0;
  for(const k of evilUnits(li))G.seen[k]=true;
